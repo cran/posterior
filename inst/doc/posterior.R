@@ -1,5 +1,5 @@
 ## ----install, eval=FALSE------------------------------------------------------
-#  install.packages("posterior", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+#  install.packages("posterior")
 
 ## ----install_github, eval=FALSE-----------------------------------------------
 #  # install.packages("remotes")

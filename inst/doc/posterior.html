@@ -185,8 +185,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
-<p>The package is not on CRAN yet, but you can install the latest beta release version via</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;posterior&quot;</span>, <span class="at">repos =</span> <span class="fu">c</span>(<span class="st">&quot;https://mc-stan.org/r-packages/&quot;</span>, <span class="fu">getOption</span>(<span class="st">&quot;repos&quot;</span>)))</span></code></pre></div>
+<p>You can install the latest official release version via</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;posterior&quot;</span>)</span></code></pre></div>
 <p>or the latest development version from GitHub via</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(&quot;remotes&quot;)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;stan-dev/posterior&quot;</span>)</span></code></pre></div>
@@ -194,7 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="example" class="section level2">
 <h2>Example</h2>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;posterior&quot;</span>)</span></code></pre></div>
-<pre><code>## This is posterior version 1.0.0</code></pre>
+<pre><code>## This is posterior version 1.0.1</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;posterior&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:stats&#39;:
@@ -305,17 +305,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 10 iterations, 1 chains, and 5 variables
 ##     variable
-## draw    V1    V2    V3    V4     V5
-##   1   0.97 -0.99 -0.89  1.41  0.078
-##   2   0.35  1.02 -0.63  0.50 -0.204
-##   3   0.61 -0.65  1.37  0.05  0.280
-##   4  -0.42 -0.14  0.45  0.98 -2.068
-##   5   0.58 -0.55  0.48 -0.58  0.825
-##   6   1.12  0.12 -0.76 -1.56 -0.503
-##   7  -0.49  0.63 -0.20  1.67 -0.757
-##   8   0.35  0.27 -0.57  0.65 -1.897
-##   9  -0.97  0.51  0.58 -0.41 -0.551
-##   10 -0.85 -1.28  1.88 -0.97  1.866</code></pre>
+## draw     V1     V2     V3     V4      V5
+##   1  -1.726  0.575  0.037 -0.758  0.1863
+##   2   0.160 -0.430  1.650 -0.198  2.5085
+##   3   1.020 -0.189  0.065  0.534  0.1695
+##   4   0.335  0.141 -0.497 -0.058  1.1620
+##   5   1.522 -0.591  0.705  0.116  0.5599
+##   6  -0.965 -0.095 -0.617 -1.688 -0.0065
+##   7  -0.439  0.839 -0.748 -0.284  0.7412
+##   8  -0.811  1.687  0.277  0.411 -0.7109
+##   9  -0.804 -0.363  1.051  0.308 -0.1509
+##   10  0.088  0.614  0.111 -0.095 -0.8009</code></pre>
 <p>Because the matrix was converted to a <code>draws_matrix</code>, all of the methods for working with <code>draws</code> objects described in subsequent sections of this vignette will now be available.</p>
 <p>Instead of <code>as_draws_matrix()</code> we also could have just used <code>as_draws()</code>, which attempts to find the closest available format to the input object. In this case the result would be a <code>draws_matrix</code> object either way.</p>
 </div>
@@ -326,17 +326,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 50 iterations, 1 chains, and 2 variables
 ##     variable
-## draw alpha   beta
-##   1  -1.63 -1.839
-##   2   0.52  0.213
-##   3   0.53  0.041
-##   4   0.42  0.782
-##   5   1.25 -0.505
-##   6  -0.88 -0.280
-##   7   0.35  0.532
-##   8   0.12  0.429
-##   9  -1.01 -0.149
-##   10 -0.99 -0.817
+## draw  alpha  beta
+##   1  -0.790  0.47
+##   2   0.041 -0.26
+##   3   0.576 -1.09
+##   4   2.685  0.46
+##   5   0.876  0.28
+##   6   2.240 -0.22
+##   7   0.426  0.55
+##   8  -0.363 -0.76
+##   9  -0.032  0.92
+##   10 -0.114  0.61
 ## # ... with 40 more draws</code></pre>
 <p>Analogous functions exist for the other draws formats and are used similarly.</p>
 </div>
@@ -429,28 +429,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x4)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 5 iterations, 1 chains, and 3 variables
 ##     variable
-## draw alpha  beta theta
-##    1 -0.50 -0.16 0.144
-##    2  0.71 -0.66 1.301
-##    3  1.42 -1.90 2.857
-##    4  0.22  0.57 0.152
-##    5  0.92  0.89 0.086</code></pre>
+## draw alpha    beta theta
+##    1  0.85 -0.2056  0.18
+##    2 -1.64 -0.2367  2.14
+##    3 -1.18  0.0147  0.02
+##    4  1.90 -0.1563  0.29
+##    5  1.56 -0.0095  0.52</code></pre>
 <p>Because <code>x1</code> and <code>x2</code> have the same variables, we can bind them along the <code>&#39;draw&#39;</code> dimension to create a single <code>draws_matrix</code> with more draws:</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>x5 <span class="ot">&lt;-</span> <span class="fu">bind_draws</span>(x1, x2, <span class="at">along =</span> <span class="st">&quot;draw&quot;</span>)</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x5)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 10 iterations, 1 chains, and 2 variables
 ##     variable
-## draw alpha  beta
-##   1  -0.50 -0.16
-##   2   0.71 -0.66
-##   3   1.42 -1.90
-##   4   0.22  0.57
-##   5   0.92  0.89
-##   6  -0.74 -0.11
-##   7   0.61 -0.18
-##   8   0.19 -0.22
-##   9  -0.19 -0.84
-##   10  1.22 -0.31</code></pre>
+## draw  alpha    beta
+##   1   0.845 -0.2056
+##   2  -1.641 -0.2367
+##   3  -1.181  0.0147
+##   4   1.903 -0.1563
+##   5   1.564 -0.0095
+##   6  -0.953 -0.3063
+##   7   1.016  0.7335
+##   8   1.240 -1.3293
+##   9  -1.867 -1.4130
+##   10  0.049  1.1854</code></pre>
 <p>As with all posterior methods, <code>bind_draws()</code> can be used with all draws formats and depending on the format different dimensions are available to bind on. For example, we can bind <code>draws_array</code> objects together by <code>iteration</code>, <code>chain</code>, or <code>variable</code>, but a 2-D <code>draws_matrix</code> with the chains combined can only by bound by <code>draw</code> and <code>variable</code>.</p>
 </div>
 </div>
@@ -527,16 +527,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## # A tibble: 10 x 2
 ##    variable weighted_mean
 ##    &lt;chr&gt;            &lt;dbl&gt;
-##  1 mu                3.79
-##  2 tau               4.17
-##  3 theta[1]          7.00
-##  4 theta[2]          4.76
-##  5 theta[3]          2.65
-##  6 theta[4]          4.50
-##  7 theta[5]          2.93
-##  8 theta[6]          3.89
-##  9 theta[7]          6.10
-## 10 theta[8]          4.15</code></pre>
+##  1 mu                4.35
+##  2 tau               4.11
+##  3 theta[1]          6.35
+##  4 theta[2]          5.18
+##  5 theta[3]          3.01
+##  6 theta[4]          4.82
+##  7 theta[5]          3.54
+##  8 theta[6]          4.51
+##  9 theta[7]          6.80
+## 10 theta[8]          4.69</code></pre>
 </div>
 <div id="specifying-functions-using-lambda-like-syntax" class="section level3">
 <h3>Specifying functions using lambda-like syntax</h3>

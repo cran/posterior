@@ -1,7 +1,7 @@
 Package: posterior
 Title: Tools for Working with Posterior Distributions
-Version: 1.0.0
-Date: 2021-07-02
+Version: 1.0.1
+Date: 2021-07-14
 Authors@R: c(person("Paul-Christian", "Bürkner", email = "paul.buerkner@gmail.com", role = c("aut", "cre")),
              person("Jonah", "Gabry", email = "jsg2201@columbia.edu", role = c("aut")),
              person("Matthew", "Kay", email = "mjskay@umich.edu", role = c("aut")),
@@ -36,7 +36,7 @@ BugReports: https://github.com/stan-dev/posterior/issues
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2021-07-13 07:37:39 UTC; paulb
+Packaged: 2021-07-14 10:42:58 UTC; paulb
 Author: Paul-Christian Bürkner [aut, cre],
   Jonah Gabry [aut],
   Matthew Kay [aut],
@@ -48,4 +48,4 @@ Author: Paul-Christian Bürkner [aut, cre],
   Jacob Socolar [ctb]
 Maintainer: Paul-Christian Bürkner <paul.buerkner@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-07-13 15:40:04 UTC
+Date/Publication: 2021-07-14 12:30:04 UTC
