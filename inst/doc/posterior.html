@@ -194,7 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="example" class="section level2">
 <h2>Example</h2>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;posterior&quot;</span>)</span></code></pre></div>
-<pre><code>## This is posterior version 1.0.1</code></pre>
+<pre><code>## This is posterior version 1.1.0</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;posterior&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:stats&#39;:
@@ -263,7 +263,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Each of the formats has a method <code>as_draws_&lt;format&gt;</code> (e.g., <code>as_draws_list()</code>) for creating an object of the class from any of the other formats. As a demonstration we can convert the example <code>draws_array</code> to a <code>draws_df</code>, a data frame with additional meta information. To convert to a <code>draws_df</code> we use <code>as_draws_df()</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>eight_schools_df <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(eight_schools_array)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(eight_schools_df)</span></code></pre></div>
-<pre><code>## draws_df[,13] [400 x 13] (S3: draws_df/draws/tbl_df/tbl/data.frame)
+<pre><code>## draws_df [400 x 13] (S3: draws_df/draws/tbl_df/tbl/data.frame)
 ##  $ mu        : num [1:400] 2.01 1.46 5.81 6.85 1.81 ...
 ##  $ tau       : num [1:400] 2.77 6.98 9.68 4.79 2.85 ...
 ##  $ theta[1]  : num [1:400] 3.962 0.124 21.251 14.7 5.96 ...
@@ -305,17 +305,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 10 iterations, 1 chains, and 5 variables
 ##     variable
-## draw     V1     V2     V3     V4      V5
-##   1  -1.726  0.575  0.037 -0.758  0.1863
-##   2   0.160 -0.430  1.650 -0.198  2.5085
-##   3   1.020 -0.189  0.065  0.534  0.1695
-##   4   0.335  0.141 -0.497 -0.058  1.1620
-##   5   1.522 -0.591  0.705  0.116  0.5599
-##   6  -0.965 -0.095 -0.617 -1.688 -0.0065
-##   7  -0.439  0.839 -0.748 -0.284  0.7412
-##   8  -0.811  1.687  0.277  0.411 -0.7109
-##   9  -0.804 -0.363  1.051  0.308 -0.1509
-##   10  0.088  0.614  0.111 -0.095 -0.8009</code></pre>
+## draw     V1     V2     V3     V4     V5
+##   1  -0.621 -0.472 -0.233  1.041  0.721
+##   2   0.071  0.111 -0.949 -0.329 -0.554
+##   3  -0.092  0.059  2.127 -1.063  1.285
+##   4   0.799 -0.379  0.858  2.920 -0.039
+##   5   0.152 -1.630  0.497 -0.162 -0.717
+##   6  -0.395 -0.692  0.415  1.393 -1.054
+##   7  -0.147  0.537 -0.476  0.073 -1.159
+##   8   1.741  1.062 -0.326  0.431  0.882
+##   9   0.234 -0.980  1.650  2.125 -1.537
+##   10 -0.742 -1.148  0.078  0.379  0.474</code></pre>
 <p>Because the matrix was converted to a <code>draws_matrix</code>, all of the methods for working with <code>draws</code> objects described in subsequent sections of this vignette will now be available.</p>
 <p>Instead of <code>as_draws_matrix()</code> we also could have just used <code>as_draws()</code>, which attempts to find the closest available format to the input object. In this case the result would be a <code>draws_matrix</code> object either way.</p>
 </div>
@@ -326,17 +326,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 50 iterations, 1 chains, and 2 variables
 ##     variable
-## draw  alpha  beta
-##   1  -0.790  0.47
-##   2   0.041 -0.26
-##   3   0.576 -1.09
-##   4   2.685  0.46
-##   5   0.876  0.28
-##   6   2.240 -0.22
-##   7   0.426  0.55
-##   8  -0.363 -0.76
-##   9  -0.032  0.92
-##   10 -0.114  0.61
+## draw alpha   beta
+##   1  -0.15  1.808
+##   2  -0.47  0.479
+##   3  -0.56 -0.165
+##   4  -1.01 -1.227
+##   5  -0.31 -1.954
+##   6  -0.81 -1.085
+##   7  -0.79  0.047
+##   8   1.08  0.900
+##   9  -1.58  0.453
+##   10 -0.30 -0.747
 ## # ... with 40 more draws</code></pre>
 <p>Analogous functions exist for the other draws formats and are used similarly.</p>
 </div>
@@ -350,7 +350,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Subsetting <code>draws</code> objects can be done according to various aspects of the draws (iterations, chains, or variables). The posterior package provides a convenient interface for this purpose via <code>subset_draws()</code>. For example, here is the code to extract the first five iterations of the first two chains of the variable <code>mu</code>.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sub_df <span class="ot">&lt;-</span> <span class="fu">subset_draws</span>(eight_schools_df, <span class="at">variable =</span> <span class="st">&quot;mu&quot;</span>, <span class="at">chain =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">iteration =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(sub_df)</span></code></pre></div>
-<pre><code>## draws_df[,4] [10 x 4] (S3: draws_df/draws/tbl_df/tbl/data.frame)
+<pre><code>## draws_df [10 x 4] (S3: draws_df/draws/tbl_df/tbl/data.frame)
 ##  $ mu        : num [1:10] 2.01 1.46 5.81 6.85 1.81 ...
 ##  $ .chain    : int [1:10] 1 1 1 1 1 2 2 2 2 2
 ##  $ .iteration: int [1:10] 1 2 3 4 5 1 2 3 4 5
@@ -429,28 +429,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x4)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 5 iterations, 1 chains, and 3 variables
 ##     variable
-## draw alpha    beta theta
-##    1  0.85 -0.2056  0.18
-##    2 -1.64 -0.2367  2.14
-##    3 -1.18  0.0147  0.02
-##    4  1.90 -0.1563  0.29
-##    5  1.56 -0.0095  0.52</code></pre>
+## draw  alpha  beta theta
+##    1 -0.012  0.41  1.21
+##    2  0.372 -0.41  0.86
+##    3 -1.283 -0.15  0.14
+##    4  0.437 -1.04  0.76
+##    5  0.386  0.28  0.32</code></pre>
 <p>Because <code>x1</code> and <code>x2</code> have the same variables, we can bind them along the <code>&#39;draw&#39;</code> dimension to create a single <code>draws_matrix</code> with more draws:</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>x5 <span class="ot">&lt;-</span> <span class="fu">bind_draws</span>(x1, x2, <span class="at">along =</span> <span class="st">&quot;draw&quot;</span>)</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x5)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 10 iterations, 1 chains, and 2 variables
 ##     variable
-## draw  alpha    beta
-##   1   0.845 -0.2056
-##   2  -1.641 -0.2367
-##   3  -1.181  0.0147
-##   4   1.903 -0.1563
-##   5   1.564 -0.0095
-##   6  -0.953 -0.3063
-##   7   1.016  0.7335
-##   8   1.240 -1.3293
-##   9  -1.867 -1.4130
-##   10  0.049  1.1854</code></pre>
+## draw  alpha  beta
+##   1  -0.012  0.41
+##   2   0.372 -0.41
+##   3  -1.283 -0.15
+##   4   0.437 -1.04
+##   5   0.386  0.28
+##   6  -2.421 -1.08
+##   7  -1.199 -1.48
+##   8  -0.669  1.06
+##   9   2.700  0.50
+##   10  1.163  0.19</code></pre>
 <p>As with all posterior methods, <code>bind_draws()</code> can be used with all draws formats and depending on the format different dimensions are available to bind on. For example, we can bind <code>draws_array</code> objects together by <code>iteration</code>, <code>chain</code>, or <code>variable</code>, but a 2-D <code>draws_matrix</code> with the chains combined can only by bound by <code>draw</code> and <code>variable</code>.</p>
 </div>
 </div>
@@ -464,16 +464,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## # A tibble: 10 x 10
 ##    variable  mean median    sd   mad      q5   q95  rhat ess_bulk ess_tail
 ##    &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-##  1 mu        4.18   4.16  3.40  3.57  -0.854  9.39  1.02     558.      NA 
-##  2 tau       4.16   3.07  3.58  2.89   0.309 11.0   1.01     246.      NA 
-##  3 theta[1]  6.75   5.97  6.30  4.87  -1.23  18.9   1.01     400.      NA 
+##  1 mu        4.18   4.16  3.40  3.57  -0.854  9.39  1.02     558.     322.
+##  2 tau       4.16   3.07  3.58  2.89   0.309 11.0   1.01     246.     202.
+##  3 theta[1]  6.75   5.97  6.30  4.87  -1.23  18.9   1.01     400.     254.
 ##  4 theta[2]  5.25   5.13  4.63  4.25  -1.97  12.5   1.02     564.     372.
-##  5 theta[3]  3.04   3.99  6.80  4.94 -10.3   11.9   1.01     312.      NA 
-##  6 theta[4]  4.86   4.99  4.92  4.51  -3.57  12.2   1.02     695.      NA 
-##  7 theta[5]  3.22   3.72  5.08  4.38  -5.93  10.8   1.01     523.      NA 
-##  8 theta[6]  3.99   4.14  5.16  4.81  -4.32  11.5   1.02     548.      NA 
-##  9 theta[7]  6.50   5.90  5.26  4.54  -1.19  15.4   1.00     434.      NA 
-## 10 theta[8]  4.57   4.64  5.25  4.89  -3.79  12.2   1.02     355.      NA</code></pre>
+##  5 theta[3]  3.04   3.99  6.80  4.94 -10.3   11.9   1.01     312.     205.
+##  6 theta[4]  4.86   4.99  4.92  4.51  -3.57  12.2   1.02     695.     252.
+##  7 theta[5]  3.22   3.72  5.08  4.38  -5.93  10.8   1.01     523.     306.
+##  8 theta[6]  3.99   4.14  5.16  4.81  -4.32  11.5   1.02     548.     205.
+##  9 theta[7]  6.50   5.90  5.26  4.54  -1.19  15.4   1.00     434.     308.
+## 10 theta[8]  4.57   4.64  5.25  4.89  -3.79  12.2   1.02     355.     146.</code></pre>
 <p>The result is a data frame with one row per variable and one column per summary statistic or convergence diagnostic. The summaries <code>rhat</code>, <code>ess_bulk</code>, and <code>ess_tail</code> are described in Vehtari et al. (2020). We can choose which summaries to compute by passing additional arguments, either functions or names of functions. For instance, if we only wanted the mean and its corresponding Monte Carlo Standard Error (MCSE) we could use either of these options:</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the function mcse_mean is provided by the posterior package</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">&lt;-</span> <span class="fu">summarise_draws</span>(eight_schools_df, <span class="st">&quot;mean&quot;</span>, <span class="st">&quot;mcse_mean&quot;</span>) </span>
@@ -527,16 +527,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## # A tibble: 10 x 2
 ##    variable weighted_mean
 ##    &lt;chr&gt;            &lt;dbl&gt;
-##  1 mu                4.35
+##  1 mu                4.11
 ##  2 tau               4.11
-##  3 theta[1]          6.35
-##  4 theta[2]          5.18
-##  5 theta[3]          3.01
-##  6 theta[4]          4.82
-##  7 theta[5]          3.54
-##  8 theta[6]          4.51
-##  9 theta[7]          6.80
-## 10 theta[8]          4.69</code></pre>
+##  3 theta[1]          6.84
+##  4 theta[2]          5.38
+##  5 theta[3]          3.19
+##  6 theta[4]          4.74
+##  7 theta[5]          3.34
+##  8 theta[6]          3.85
+##  9 theta[7]          6.24
+## 10 theta[8]          4.20</code></pre>
 </div>
 <div id="specifying-functions-using-lambda-like-syntax" class="section level3">
 <h3>Specifying functions using lambda-like syntax</h3>

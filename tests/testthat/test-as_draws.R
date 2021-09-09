@@ -56,6 +56,11 @@ test_that("transformations to and from draws_df objects work", {
   draws_rvars <- as_draws_rvars(draws_df)
   draws_df2 <- as_draws_df(draws_rvars)
   expect_equal(draws_df, draws_df2)
+
+  # test that a single draw does not lead to a drop of dimensions
+  draws_rvars2 <- subset_draws(draws_rvars, draw = 1)
+  draws_df2 <- as_draws_df(draws_rvars2)
+  expect_equal(subset_draws(draws_df, draw = 1), draws_df2)
 })
 
 test_that("transformations to and from draws_list objects work", {
@@ -314,6 +319,14 @@ test_that("as_draws_rvars correctly reshapes missing, out-of-order, and string a
   rownames(x_rvars2$var) <- letters[1:2]
   colnames(x_rvars2$var) <- rev(letters[1:5])
   expect_equal(as_draws_rvars(as_draws_array(x_rvars2)), x_rvars2)
+})
+
+test_that("as_draws_rvars can accept lists of lists as input", {
+  # for https://github.com/stan-dev/posterior/issues/192
+  draws_list <- as_draws_list(example_draws())
+  list_of_lists <- unclass(draws_list)
+
+  expect_equal(as_draws_rvars(example_draws()), as_draws_rvars(list_of_lists))
 })
 
 test_that("draws_df does not munge variable names", {
