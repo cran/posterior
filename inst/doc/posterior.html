@@ -194,7 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="example" class="section level2">
 <h2>Example</h2>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;posterior&quot;</span>)</span></code></pre></div>
-<pre><code>## This is posterior version 1.1.0</code></pre>
+<pre><code>## This is posterior version 1.2.0</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;posterior&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:stats&#39;:
@@ -263,7 +263,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Each of the formats has a method <code>as_draws_&lt;format&gt;</code> (e.g., <code>as_draws_list()</code>) for creating an object of the class from any of the other formats. As a demonstration we can convert the example <code>draws_array</code> to a <code>draws_df</code>, a data frame with additional meta information. To convert to a <code>draws_df</code> we use <code>as_draws_df()</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>eight_schools_df <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(eight_schools_array)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(eight_schools_df)</span></code></pre></div>
-<pre><code>## draws_df [400 x 13] (S3: draws_df/draws/tbl_df/tbl/data.frame)
+<pre><code>## draws_df [400 × 13] (S3: draws_df/draws/tbl_df/tbl/data.frame)
 ##  $ mu        : num [1:400] 2.01 1.46 5.81 6.85 1.81 ...
 ##  $ tau       : num [1:400] 2.77 6.98 9.68 4.79 2.85 ...
 ##  $ theta[1]  : num [1:400] 3.962 0.124 21.251 14.7 5.96 ...
@@ -305,17 +305,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 10 iterations, 1 chains, and 5 variables
 ##     variable
-## draw     V1     V2     V3     V4     V5
-##   1  -0.621 -0.472 -0.233  1.041  0.721
-##   2   0.071  0.111 -0.949 -0.329 -0.554
-##   3  -0.092  0.059  2.127 -1.063  1.285
-##   4   0.799 -0.379  0.858  2.920 -0.039
-##   5   0.152 -1.630  0.497 -0.162 -0.717
-##   6  -0.395 -0.692  0.415  1.393 -1.054
-##   7  -0.147  0.537 -0.476  0.073 -1.159
-##   8   1.741  1.062 -0.326  0.431  0.882
-##   9   0.234 -0.980  1.650  2.125 -1.537
-##   10 -0.742 -1.148  0.078  0.379  0.474</code></pre>
+## draw    V1    V2     V3     V4     V5
+##   1  -1.22  1.19 -0.023 -0.188 -0.411
+##   2   0.42 -0.62  0.706 -0.928 -0.405
+##   3   0.71 -0.97 -2.393  0.971  0.090
+##   4   1.01  0.71  1.075  1.217  0.573
+##   5   1.03  1.78 -1.011  0.977  0.068
+##   6   2.35  1.45 -0.439 -1.772  1.945
+##   7  -0.51 -0.49 -0.761  0.440  1.402
+##   8  -0.49  0.49 -1.068 -0.097 -0.126
+##   9  -1.22 -1.41 -0.264 -0.078 -0.877
+##   10  0.91 -0.49 -0.705  0.190  0.496</code></pre>
 <p>Because the matrix was converted to a <code>draws_matrix</code>, all of the methods for working with <code>draws</code> objects described in subsequent sections of this vignette will now be available.</p>
 <p>Instead of <code>as_draws_matrix()</code> we also could have just used <code>as_draws()</code>, which attempts to find the closest available format to the input object. In this case the result would be a <code>draws_matrix</code> object either way.</p>
 </div>
@@ -327,16 +327,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## # A draws_matrix: 50 iterations, 1 chains, and 2 variables
 ##     variable
 ## draw alpha   beta
-##   1  -0.15  1.808
-##   2  -0.47  0.479
-##   3  -0.56 -0.165
-##   4  -1.01 -1.227
-##   5  -0.31 -1.954
-##   6  -0.81 -1.085
-##   7  -0.79  0.047
-##   8   1.08  0.900
-##   9  -1.58  0.453
-##   10 -0.30 -0.747
+##   1   0.55 -0.494
+##   2   0.39 -0.693
+##   3  -1.18  0.484
+##   4   0.48  0.677
+##   5  -1.70  1.026
+##   6   0.40 -0.177
+##   7  -1.00 -0.595
+##   8  -0.90  1.177
+##   9  -1.81 -1.235
+##   10 -1.24 -0.062
 ## # ... with 40 more draws</code></pre>
 <p>Analogous functions exist for the other draws formats and are used similarly.</p>
 </div>
@@ -350,7 +350,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Subsetting <code>draws</code> objects can be done according to various aspects of the draws (iterations, chains, or variables). The posterior package provides a convenient interface for this purpose via <code>subset_draws()</code>. For example, here is the code to extract the first five iterations of the first two chains of the variable <code>mu</code>.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sub_df <span class="ot">&lt;-</span> <span class="fu">subset_draws</span>(eight_schools_df, <span class="at">variable =</span> <span class="st">&quot;mu&quot;</span>, <span class="at">chain =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">iteration =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(sub_df)</span></code></pre></div>
-<pre><code>## draws_df [10 x 4] (S3: draws_df/draws/tbl_df/tbl/data.frame)
+<pre><code>## draws_df [10 × 4] (S3: draws_df/draws/tbl_df/tbl/data.frame)
 ##  $ mu        : num [1:10] 2.01 1.46 5.81 6.85 1.81 ...
 ##  $ .chain    : int [1:10] 1 1 1 1 1 2 2 2 2 2
 ##  $ .iteration: int [1:10] 1 2 3 4 5 1 2 3 4 5
@@ -429,28 +429,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x4)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 5 iterations, 1 chains, and 3 variables
 ##     variable
-## draw  alpha  beta theta
-##    1 -0.012  0.41  1.21
-##    2  0.372 -0.41  0.86
-##    3 -1.283 -0.15  0.14
-##    4  0.437 -1.04  0.76
-##    5  0.386  0.28  0.32</code></pre>
+## draw alpha   beta   theta
+##    1 -0.53 -1.669 0.42366
+##    2 -0.44  0.319 0.63572
+##    3  0.14  0.022 1.10042
+##    4 -0.80 -0.921 2.26186
+##    5 -0.07  0.147 0.00092</code></pre>
 <p>Because <code>x1</code> and <code>x2</code> have the same variables, we can bind them along the <code>&#39;draw&#39;</code> dimension to create a single <code>draws_matrix</code> with more draws:</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>x5 <span class="ot">&lt;-</span> <span class="fu">bind_draws</span>(x1, x2, <span class="at">along =</span> <span class="st">&quot;draw&quot;</span>)</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x5)</span></code></pre></div>
 <pre><code>## # A draws_matrix: 10 iterations, 1 chains, and 2 variables
 ##     variable
-## draw  alpha  beta
-##   1  -0.012  0.41
-##   2   0.372 -0.41
-##   3  -1.283 -0.15
-##   4   0.437 -1.04
-##   5   0.386  0.28
-##   6  -2.421 -1.08
-##   7  -1.199 -1.48
-##   8  -0.669  1.06
-##   9   2.700  0.50
-##   10  1.163  0.19</code></pre>
+## draw   alpha   beta
+##   1  -0.5335 -1.669
+##   2  -0.4444  0.319
+##   3   0.1359  0.022
+##   4  -0.7998 -0.921
+##   5  -0.0697  0.147
+##   6  -1.8118  0.972
+##   7   0.2988  0.942
+##   8   1.0243 -0.342
+##   9  -0.0105  3.009
+##   10 -0.0034 -0.602</code></pre>
 <p>As with all posterior methods, <code>bind_draws()</code> can be used with all draws formats and depending on the format different dimensions are available to bind on. For example, we can bind <code>draws_array</code> objects together by <code>iteration</code>, <code>chain</code>, or <code>variable</code>, but a 2-D <code>draws_matrix</code> with the chains combined can only by bound by <code>draw</code> and <code>variable</code>.</p>
 </div>
 </div>
@@ -461,7 +461,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Computing summaries of posterior or prior draws and convergence diagnostics for posterior draws are some of the most common tasks when working with Bayesian models fit using Markov Chain Monte Carlo (MCMC) methods. The posterior package provides a flexible interface for this purpose via <code>summarise_draws()</code> (or <code>summarize_draws()</code>), which can be passed any of the formats supported by the package.</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summarise_draws or summarize_draws</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise_draws</span>(eight_schools_df)</span></code></pre></div>
-<pre><code>## # A tibble: 10 x 10
+<pre><code>## # A tibble: 10 × 10
 ##    variable  mean median    sd   mad      q5   q95  rhat ess_bulk ess_tail
 ##    &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
 ##  1 mu        4.18   4.16  3.40  3.57  -0.854  9.39  1.02     558.     322.
@@ -481,7 +481,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(s1, s2)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(s1)</span></code></pre></div>
-<pre><code>## # A tibble: 10 x 3
+<pre><code>## # A tibble: 10 × 3
 ##    variable  mean mcse_mean
 ##    &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
 ##  1 mu        4.18     0.150
@@ -499,7 +499,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3>Changing column names</h3>
 <p>The column names in the output can be changed by providing the functions as name-value pairs, where the name is the name to use in the output and the value is a function name or definition. For example, here we change the names <code>mean</code> and <code>sd</code> to <code>posterior_mean</code> and <code>posterior_sd</code>.</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise_draws</span>(eight_schools_df, <span class="at">posterior_mean =</span> mean, <span class="at">posterior_sd =</span> sd)</span></code></pre></div>
-<pre><code>## # A tibble: 10 x 3
+<pre><code>## # A tibble: 10 × 3
 ##    variable posterior_mean posterior_sd
 ##    &lt;chr&gt;             &lt;dbl&gt;        &lt;dbl&gt;
 ##  1 mu                 4.18         3.40
@@ -524,19 +524,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  weighted_mean, </span>
 <span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">.args =</span> <span class="fu">list</span>(<span class="at">wts =</span> <span class="fu">rexp</span>(<span class="fu">ndraws</span>(eight_schools_df)))</span>
 <span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## # A tibble: 10 x 2
+<pre><code>## # A tibble: 10 × 2
 ##    variable weighted_mean
 ##    &lt;chr&gt;            &lt;dbl&gt;
-##  1 mu                4.11
-##  2 tau               4.11
-##  3 theta[1]          6.84
-##  4 theta[2]          5.38
-##  5 theta[3]          3.19
-##  6 theta[4]          4.74
-##  7 theta[5]          3.34
-##  8 theta[6]          3.85
-##  9 theta[7]          6.24
-## 10 theta[8]          4.20</code></pre>
+##  1 mu                3.91
+##  2 tau               4.27
+##  3 theta[1]          6.66
+##  4 theta[2]          5.11
+##  5 theta[3]          2.28
+##  6 theta[4]          4.69
+##  7 theta[5]          2.80
+##  8 theta[6]          4.03
+##  9 theta[7]          6.75
+## 10 theta[8]          4.58</code></pre>
 </div>
 <div id="specifying-functions-using-lambda-like-syntax" class="section level3">
 <h3>Specifying functions using lambda-like syntax</h3>
@@ -547,7 +547,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="sc">~</span><span class="fu">quantile</span>(., <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.6</span>))</span></code></pre></div>
 <p>Both can be used with <code>summarise_draws()</code> and produce the same output:</p>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise_draws</span>(eight_schools_df, <span class="cf">function</span>(x) <span class="fu">quantile</span>(x, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.6</span>)))</span></code></pre></div>
-<pre><code>## # A tibble: 10 x 3
+<pre><code>## # A tibble: 10 × 3
 ##    variable `40%` `60%`
 ##    &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt;
 ##  1 mu        3.41  5.35
@@ -561,7 +561,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  9 theta[7]  4.81  7.33
 ## 10 theta[8]  3.50  5.92</code></pre>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise_draws</span>(eight_schools_df, <span class="sc">~</span><span class="fu">quantile</span>(.x, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.6</span>)))</span></code></pre></div>
-<pre><code>## # A tibble: 10 x 3
+<pre><code>## # A tibble: 10 × 3
 ##    variable `40%` `60%`
 ##    &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt;
 ##  1 mu        3.41  5.35

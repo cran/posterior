@@ -1,3 +1,21 @@
+# posterior 1.2.0
+
+### Enhancements
+
+* support casting to/from `rvar` and `distributional::dist_sample` (#109)
+
+### Bug Fixes
+
+* fix hidden variables in `bind_draws.draws_df` when binding 
+more than two objects thanks to Jouni Helske (#204)
+* fix output of `pillar::glimpse()` when used on a data frame containing 
+`rvar`s (#210)
+* drop `"draws"` and `"draws_df"` classes from `draws_df` objects if meta data
+columns are removed by a `dplyr` operation (#202)
+* fix output of `print.draws_df()` on objects with unrepaired draws (#217)
+* ensure `variance()` works properly with `summarise_draws()` (#219)
+
+
 # posterior 1.1.0
 
 ### Enhancements

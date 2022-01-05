@@ -1,7 +1,7 @@
 Package: posterior
 Title: Tools for Working with Posterior Distributions
-Version: 1.1.0
-Date: 2021-09-09
+Version: 1.2.0
+Date: 2022-01-05
 Authors@R: c(person("Paul-Christian", "Bürkner", email = "paul.buerkner@gmail.com", role = c("aut", "cre")),
              person("Jonah", "Gabry", email = "jsg2201@columbia.edu", role = c("aut")),
              person("Matthew", "Kay", email = "mjskay@northwestern.edu", role = c("aut")),
@@ -30,13 +30,12 @@ Suggests: testthat (>= 2.1.0), caret (>= 6.0.84), gbm (>= 2.1.8),
         knitr, rmarkdown
 License: BSD_3_clause + file LICENSE
 Encoding: UTF-8
-LazyData: false
 URL: https://mc-stan.org/posterior/, https://discourse.mc-stan.org/
 BugReports: https://github.com/stan-dev/posterior/issues
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2021-09-09 10:15:09 UTC; paulb
+Packaged: 2022-01-05 15:59:41 UTC; paul.buerkner
 Author: Paul-Christian Bürkner [aut, cre],
   Jonah Gabry [aut],
   Matthew Kay [aut],
@@ -48,4 +47,4 @@ Author: Paul-Christian Bürkner [aut, cre],
   Jacob Socolar [ctb]
 Maintainer: Paul-Christian Bürkner <paul.buerkner@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-09-09 11:30:02 UTC
+Date/Publication: 2022-01-05 16:50:02 UTC

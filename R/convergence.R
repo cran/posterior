@@ -33,8 +33,9 @@ NULL
 #' Basic version of the Rhat convergence diagnostic
 #'
 #' Compute the basic Rhat convergence diagnostic for a single variable as
-#' described in Gelman et al. (2013). For practical applications, we strongly
-#' recommend the improved Rhat convergence diagnostic implemented in [rhat()].
+#' described in Gelman et al. (2013) with some changes according to Vehtari et
+#' al. (2021). For practical applications, we strongly recommend the improved
+#' Rhat convergence diagnostic implemented in [rhat()].
 #'
 #' @family diagnostics
 #' @template args-conv
@@ -42,6 +43,7 @@ NULL
 #' @template args-methods-dots
 #' @template return-conv
 #' @template ref-gelman-bda-2013
+#' @template ref-vehtari-rhat-2021
 #'
 #' @examples
 #' mu <- extract_variable_matrix(example_draws(), "mu")
@@ -72,9 +74,11 @@ rhat_basic.rvar <- function(x, split = TRUE, ...) {
 #' Basic version of the effective sample size
 #'
 #' Compute the basic effective sample size (ESS) estimate for a single variable
-#' as described in Gelman et al. (2013). For practical applications, we strongly
+#' as described in Gelman et al. (2013) with some changes according to Vehtari et
+#' al. (2021). For practical applications, we strongly
 #' recommend the improved ESS convergence diagnostics implemented in
-#' [ess_bulk()] and [ess_tail()].
+#' [ess_bulk()] and [ess_tail()]. See Vehtari (2021) for an in-depth
+#' comparison of different effective sample size estimators.
 #'
 #' @family diagnostics
 #' @template args-conv
@@ -82,6 +86,8 @@ rhat_basic.rvar <- function(x, split = TRUE, ...) {
 #' @template args-methods-dots
 #' @template return-conv
 #' @template ref-gelman-bda-2013
+#' @template ref-vehtari-rhat-2021
+#' @template ref-vehtari-ess-2021
 #'
 #' @examples
 #' mu <- extract_variable_matrix(example_draws(), "mu")
@@ -113,13 +119,13 @@ ess_basic.rvar <- function(x, split = TRUE, ...) {
 #'
 #' Compute the Rhat convergence diagnostic for a single variable as the maximum
 #' of rank normalized split-Rhat and rank normalized folded-split-Rhat as
-#' proposed in Vehtari et al. (2019).
+#' proposed in Vehtari et al. (2021).
 #'
 #' @family diagnostics
 #' @template args-conv
 #' @template args-methods-dots
 #' @template return-conv
-#' @template ref-vehtari-rhat-2019
+#' @template ref-vehtari-rhat-2021
 #'
 #' @examples
 #' mu <- extract_variable_matrix(example_draws(), "mu")
@@ -151,13 +157,15 @@ rhat.rvar <- function(x, ...) {
 #' variable. Bulk-ESS is useful as a diagnostic for the sampling efficiency in
 #' the bulk of the posterior. It is defined as the effective sample size for
 #' rank normalized values using split chains. For the tail effective sample size
-#' see [ess_tail()].
+#' see [ess_tail()]. See Vehtari (2021) for an in-depth
+#' comparison of different effective sample size estimators.
 #'
 #' @family diagnostics
 #' @template args-conv
 #' @template args-methods-dots
 #' @template return-conv
-#' @template ref-vehtari-rhat-2019
+#' @template ref-vehtari-rhat-2021
+#' @template ref-vehtari-ess-2021
 #'
 #' @examples
 #' mu <- extract_variable_matrix(example_draws(), "mu")
@@ -187,13 +195,15 @@ ess_bulk.rvar <- function(x, ...) {
 #' variable. Tail-ESS is useful as a diagnostic for the sampling efficiency in
 #' the tails of the posterior. It is defined as the minimum of the effective
 #' sample sizes for 5% and 95% quantiles. For the bulk effective sample
-#' size see [ess_bulk()].
+#' size see [ess_bulk()]. See Vehtari (2021) for an in-depth
+#' comparison of different effective sample size estimators.
 #'
 #' @family diagnostics
 #' @template args-conv
 #' @template args-methods-dots
 #' @template return-conv
-#' @template ref-vehtari-rhat-2019
+#' @template ref-vehtari-rhat-2021
+#' @template ref-vehtari-ess-2021
 #'
 #' @examples
 #' mu <- extract_variable_matrix(example_draws(), "mu")
@@ -229,7 +239,7 @@ ess_tail.rvar <- function(x, ...) {
 #' @template args-conv-quantile
 #' @template args-methods-dots
 #' @template return-conv-quantile
-#' @template ref-vehtari-rhat-2019
+#' @template ref-vehtari-rhat-2021
 #'
 #' @examples
 #' mu <- extract_variable_matrix(example_draws(), "mu")
@@ -323,7 +333,7 @@ ess_mean.rvar <- function(x, ...) {
 #' @template args-conv
 #' @template args-methods-dots
 #' @template return-conv
-#' @template ref-vehtari-rhat-2019
+#' @template ref-vehtari-rhat-2021
 #'
 #' @examples
 #' mu <- extract_variable_matrix(example_draws(), "mu")
@@ -357,7 +367,7 @@ ess_sd.rvar <- function(x, ...) {
 #' @template args-conv-quantile
 #' @template args-methods-dots
 #' @template return-conv-quantile
-#' @template ref-vehtari-rhat-2019
+#' @template ref-vehtari-rhat-2021
 #'
 #' @examples
 #' mu <- extract_variable_matrix(example_draws(), "mu")
@@ -453,7 +463,7 @@ mcse_mean.rvar <- function(x, ...) {
 #' @template args-conv
 #' @template args-methods-dots
 #' @template return-conv
-#' @template ref-vehtari-rhat-2019
+#' @template ref-vehtari-rhat-2021
 #'
 #' @examples
 #' mu <- extract_variable_matrix(example_draws(), "mu")
@@ -744,7 +754,11 @@ fold_draws <- function(x) {
   # Improved estimate reduces variance in antithetic case
   tau_hat <- -1 + 2 * sum(rho_hat_t[1:max_t]) + rho_hat_t[max_t+1]
   # Safety check for negative values and with max ess equal to ess*log10(ess)
-  tau_hat <- max(tau_hat, 1/log10(ess))
+  tau_bound <- 1 / log10(ess)
+  if (tau_hat < tau_bound) {
+    warning_no_call("The ESS has been capped to avoid negative values.")
+    tau_hat <- tau_bound
+  }
   ess <- ess / tau_hat
   ess
 }

@@ -9,7 +9,7 @@
 status](https://www.r-pkg.org/badges/version/posterior)](https://CRAN.R-project.org/package=posterior)
 [![R-CMD-check](https://github.com/stan-dev/posterior/workflows/R-CMD-check/badge.svg)](https://github.com/stan-dev/posterior/actions?workflow=R-CMD-check)
 [![Coverage
-Status](https://codecov.io/gh/stan-dev/posterior/branch/master/graph/badge.svg)](https://codecov.io/gh/stan-dev/posterior)
+Status](https://codecov.io/gh/stan-dev/posterior/branch/master/graph/badge.svg)](https://app.codecov.io/gh/stan-dev/posterior)
 <!-- badges: end -->
 
 The **posterior** R package is intended to provide useful tools for both
@@ -58,7 +58,7 @@ package*](https://mc-stan.org/posterior/articles/posterior.html).
 
 ``` r
 library("posterior")
-#> This is posterior version 1.0.1.9001
+#> This is posterior version 1.2.0
 #> 
 #> Attaching package: 'posterior'
 #> The following objects are masked from 'package:stats':
@@ -153,7 +153,7 @@ this purpose via `summarise_draws()`:
 ``` r
 # summarise_draws or summarize_draws
 summarise_draws(eight_schools_df)
-#> # A tibble: 10 x 10
+#> # A tibble: 10 × 10
 #>    variable  mean median    sd   mad      q5   q95  rhat ess_bulk ess_tail
 #>    <chr>    <dbl>  <dbl> <dbl> <dbl>   <dbl> <dbl> <dbl>    <dbl>    <dbl>
 #>  1 mu        4.18   4.16  3.40  3.57  -0.854  9.39  1.02     558.     322.
@@ -178,7 +178,7 @@ would use:
 
 ``` r
 summarise_draws(eight_schools_df, "mean", "mcse_mean")
-#> # A tibble: 10 x 3
+#> # A tibble: 10 × 3
 #>    variable  mean mcse_mean
 #>    <chr>    <dbl>     <dbl>
 #>  1 mu        4.18     0.150
@@ -294,11 +294,11 @@ print(x4)
 #> # A draws_matrix: 5 iterations, 1 chains, and 3 variables
 #>     variable
 #> draw alpha beta theta
-#>    1 -0.71    1  0.62
-#>    2  0.32    1  2.61
-#>    3 -0.45    1  2.05
-#>    4 -0.84    1  0.02
-#>    5  0.44    1  0.87
+#>    1  0.39    1  2.27
+#>    2 -0.80    1  0.86
+#>    3  0.95    1  1.93
+#>    4  0.38    1  0.67
+#>    5  0.18    1  2.04
 ```
 
 Or, we can bind `x1` and `x2` together along the `'draw'` dimension:
@@ -309,16 +309,16 @@ print(x5)
 #> # A draws_matrix: 10 iterations, 1 chains, and 2 variables
 #>     variable
 #> draw alpha beta
-#>   1  -0.71    1
-#>   2   0.32    1
-#>   3  -0.45    1
-#>   4  -0.84    1
-#>   5   0.44    1
-#>   6   1.15    2
-#>   7  -0.29    2
-#>   8   1.16    2
-#>   9   2.60    2
-#>   10 -0.61    2
+#>   1   0.39    1
+#>   2  -0.80    1
+#>   3   0.95    1
+#>   4   0.38    1
+#>   5   0.18    1
+#>   6   0.13    2
+#>   7   0.10    2
+#>   8  -0.61    2
+#>   9   0.12    2
+#>   10  1.48    2
 ```
 
 As with all **posterior** methods, `bind_draws` can be used with all
@@ -337,27 +337,27 @@ x <- as_draws_matrix(x)
 print(x)
 #> # A draws_matrix: 10 iterations, 1 chains, and 5 variables
 #>     variable
-#> draw    V1    V2     V3     V4     V5
-#>   1  -0.81  0.82 -0.939  1.082  0.268
-#>   2  -0.52  0.38  0.895  0.570 -2.713
-#>   3   0.81 -0.71  0.057 -2.169 -0.908
-#>   4   0.54 -0.18 -1.304  0.062  2.039
-#>   5  -0.45  0.39  0.407  0.524 -0.113
-#>   6  -1.34  0.08 -1.328  1.535 -0.041
-#>   7   0.59 -1.59 -0.499  0.330 -0.889
-#>   8  -1.22  0.26  0.245 -1.368  0.731
-#>   9  -1.25 -1.79  0.643 -0.326  0.507
-#>   10 -1.68  0.59 -0.584 -0.126 -0.958
+#> draw    V1    V2    V3    V4    V5
+#>   1  -0.89  0.37 -0.25 -0.57 -2.85
+#>   2   1.84  0.19  0.39 -0.52  1.26
+#>   3   0.79 -0.74 -1.61  0.99 -0.11
+#>   4  -2.25  0.28 -0.19 -0.33  0.92
+#>   5   0.58  0.35 -0.92  0.56  0.82
+#>   6  -1.38 -0.12 -0.40 -1.23 -0.60
+#>   7  -0.18  1.18 -1.27  0.51  0.78
+#>   8   0.17  1.50 -2.12 -0.45 -0.73
+#>   9  -0.60  0.69 -0.43 -1.40  1.14
+#>   10  0.18  0.96 -1.37 -0.58 -0.63
 
 summarise_draws(x, "mean", "sd", "median", "mad")
-#> # A tibble: 5 x 5
-#>   variable    mean    sd  median   mad
-#>   <chr>      <dbl> <dbl>   <dbl> <dbl>
-#> 1 V1       -0.534  0.897 -0.665  0.934
-#> 2 V2       -0.175  0.903  0.170  0.570
-#> 3 V3       -0.241  0.803 -0.221  0.998
-#> 4 V4        0.0112 1.10   0.196  0.664
-#> 5 V5       -0.208  1.27  -0.0769 1.20
+#> # A tibble: 5 × 5
+#>   variable      mean    sd   median   mad
+#>   <chr>        <dbl> <dbl>    <dbl> <dbl>
+#> 1 V1       -0.174    1.16  -0.00490 1.03 
+#> 2 V2        0.467    0.651  0.358   0.596
+#> 3 V3       -0.817    0.770 -0.671   0.798
+#> 4 V4       -0.301    0.773 -0.486   0.672
+#> 5 V5       -0.000826 1.27   0.338   1.27
 ```
 
 Instead of `as_draws_matrix()` we also could have just used
@@ -384,14 +384,15 @@ When using **posterior**, please cite it as follows:
 
 -   Bürkner P. C., Gabry J., Kay M., & Vehtari A. (2020). “posterior:
     Tools for Working with Posterior Distributions.” R package version
-    XXX, &lt;URL: <https://mc-stan.org/posterior/>&gt;.
+    XXX, \<URL: <https://mc-stan.org/posterior/>\>.
 
 When using the MCMC convergence diagnostics `rhat`, `ess_bulk`, or
 `ess_tail`, please also cite
 
 -   Vehtari A., Gelman A., Simpson D., Carpenter B., & Bürkner P. C.
-    (2020). Rank-normalization, folding, and localization: An improved
-    Rhat for assessing convergence of MCMC. *Bayesian Analysis*.
+    (2021). Rank-normalization, folding, and localization: An improved
+    Rhat for assessing convergence of MCMC (with discussion). *Bayesian
+    Analysis*. 16(2), 667–718. doi.org/10.1214/20-BA1221
 
 The same information can be obtained by running `citation("posterior")`.
 
@@ -401,9 +402,10 @@ Gelman A., Carlin J. B., Stern H. S., David B. Dunson D. B., Aki Vehtari
 A., & Rubin D. B. (2013). *Bayesian Data Analysis, Third Edition*.
 Chapman and Hall/CRC.
 
-Vehtari A., Gelman A., Simpson D., Carpenter B., & Bürkner P. C. (2020).
+Vehtari A., Gelman A., Simpson D., Carpenter B., & Bürkner P. C. (2021).
 Rank-normalization, folding, and localization: An improved Rhat for
-assessing convergence of MCMC. *Bayesian Analysis*.
+assessing convergence of MCMC (with discussion). *Bayesian Analysis*.
+16(2), 667–718. doi.org/10.1214/20-BA1221
 
 ### Licensing
 
