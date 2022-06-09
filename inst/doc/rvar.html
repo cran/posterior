@@ -12,11 +12,23 @@
 
 <meta name="author" content="Matthew Kay" />
 
-<meta name="date" content="2022-03-07" />
+<meta name="date" content="2022-06-09" />
 
 <title>rvar: The Random Variable Datatype</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -127,7 +139,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -141,44 +333,71 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">rvar: The Random Variable Datatype</h1>
 <h4 class="author">Matthew Kay</h4>
-<h4 class="date">2022-03-07</h4>
+<h4 class="date">2022-06-09</h4>
 
 
 <div id="TOC">
 <ul>
 <li><a href="#introduction">Introduction</a></li>
-<li><a href="#the-rvars-datatype">The <code>rvars</code> datatype</a></li>
-<li><a href="#the-draws_rvars-datatype">The <code>draws_rvars</code> datatype</a></li>
+<li><a href="#the-rvars-datatype">The <code>rvars</code>
+datatype</a></li>
+<li><a href="#the-draws_rvars-datatype">The <code>draws_rvars</code>
+datatype</a></li>
 <li><a href="#math-with-rvars">Math with <code>rvar</code>s</a></li>
-<li><a href="#expectations-and-summary-functions">Expectations and summary functions</a></li>
+<li><a href="#expectations-and-summary-functions">Expectations and
+summary functions</a></li>
 <li><a href="#constants">Constants</a></li>
-<li><a href="#using-existing-r-functions-and-expressions-with-rvars">Using existing R functions and expressions with <code>rvar</code>s</a>
+<li><a href="#using-existing-r-functions-and-expressions-with-rvars">Using
+existing R functions and expressions with <code>rvar</code>s</a>
 <ul>
-<li><a href="#converting-functions-with-rfun">Converting functions with <code>rfun()</code></a></li>
-<li><a href="#evaluating-expressions-with-rdo">Evaluating expressions with <code>rdo()</code></a></li>
-<li><a href="#evaluating-random-number-generators-with-rvar_rng">Evaluating random number generators with <code>rvar_rng()</code></a></li>
+<li><a href="#converting-functions-with-rfun">Converting functions with
+<code>rfun()</code></a></li>
+<li><a href="#evaluating-expressions-with-rdo">Evaluating expressions
+with <code>rdo()</code></a></li>
+<li><a href="#evaluating-random-number-generators-with-rvar_rng">Evaluating
+random number generators with <code>rvar_rng()</code></a></li>
 </ul></li>
 <li><a href="#broadcasting">Broadcasting</a></li>
-<li><a href="#applying-functions-over-rvars">Applying functions over <code>rvar</code>s</a></li>
-<li><a href="#using-rvars-in-data-frames-and-in-ggplot2">Using <code>rvar</code>s in data frames and in ggplot2</a></li>
+<li><a href="#applying-functions-over-rvars">Applying functions over
+<code>rvar</code>s</a></li>
+<li><a href="#using-rvars-in-data-frames-and-in-ggplot2">Using
+<code>rvar</code>s in data frames and in ggplot2</a></li>
 </ul>
 </div>
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This vignette describes the <code>rvar()</code> datatype, a multidimensional, sample-based representation of random variables designed to act as much like base R arrays as possible (e.g., by supporting many math operators and functions). This format is also the basis of the <code>draws_rvars()</code> format.</p>
-<p>The <code>rvar()</code> datatype is inspired by the <a href="https://cran.r-project.org/package=rv">rv</a> package and <a href="https://doi.org/10.1007%2Fs11222-007-9020-4">Kerman and Gelman (2007)</a>, though with a slightly different backing format (multidimensional arrays). It is also designed to interoperate with vectorized distributions in the <a href="https://pkg.mitchelloharawild.com/distributional/">distributional</a> package, to be able to be used inside <code>data.frame()</code>s and <code>tibble()</code>s, and to be used with distribution visualizations in the <a href="https://mjskay.github.io/ggdist/">ggdist</a> package.</p>
+<p>This vignette describes the <code>rvar()</code> datatype, a
+multidimensional, sample-based representation of random variables
+designed to act as much like base R arrays as possible (e.g., by
+supporting many math operators and functions). This format is also the
+basis of the <code>draws_rvars()</code> format.</p>
+<p>The <code>rvar()</code> datatype is inspired by the <a href="https://cran.r-project.org/package=rv">rv</a> package and <a href="https://doi.org/10.1007%2Fs11222-007-9020-4">Kerman and Gelman
+(2007)</a>, though with a slightly different backing format
+(multidimensional arrays). It is also designed to interoperate with
+vectorized distributions in the <a href="https://pkg.mitchelloharawild.com/distributional/">distributional</a>
+package, to be able to be used inside <code>data.frame()</code>s and
+<code>tibble()</code>s, and to be used with distribution visualizations
+in the <a href="https://mjskay.github.io/ggdist/">ggdist</a>
+package.</p>
 </div>
 <div id="the-rvars-datatype" class="section level2">
 <h2>The <code>rvars</code> datatype</h2>
-<p>The <code>rvar()</code> datatype is a wrapper around a multidimensional array where the first dimension is the number of draws in the random variable. The most direct way to create a random variable is to pass such an array to the <code>rvar()</code> function.</p>
-<p>For example, to create a “scalar” <code>rvar</code>, one would pass a one-dimensional array or a vector whose length (here <code>4000</code>) is the desired number of draws:</p>
+<p>The <code>rvar()</code> datatype is a wrapper around a
+multidimensional array where the first dimension is the number of draws
+in the random variable. The most direct way to create a random variable
+is to pass such an array to the <code>rvar()</code> function.</p>
+<p>For example, to create a “scalar” <code>rvar</code>, one would pass a
+one-dimensional array or a vector whose length (here <code>4000</code>)
+is the desired number of draws:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rvar</span>(<span class="fu">rnorm</span>(<span class="dv">4000</span>, <span class="at">mean =</span> <span class="dv">1</span>, <span class="at">sd =</span> <span class="dv">1</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x</span></code></pre></div>
 <pre><code>## rvar&lt;4000&gt;[1] mean ± sd:
 ## [1] 1 ± 1</code></pre>
-<p>The default display of an <code>rvar</code> shows the mean and standard deviation of each element of the array.</p>
-<p>We can create random vectors by adding an additional dimension beyond just the draws dimension to the input array:</p>
+<p>The default display of an <code>rvar</code> shows the mean and
+standard deviation of each element of the array.</p>
+<p>We can create random vectors by adding an additional dimension beyond
+just the draws dimension to the input array:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">4</span>   <span class="co"># length of output vector</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rvar</span>(<span class="fu">array</span>(<span class="fu">rnorm</span>(<span class="dv">4000</span><span class="sc">*</span>n, <span class="at">mean =</span> <span class="dv">1</span>, <span class="at">sd =</span> <span class="dv">1</span>), <span class="at">dim =</span> <span class="fu">c</span>(<span class="dv">4000</span>, n)))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>x</span></code></pre></div>
@@ -195,14 +414,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## [2,] 1.00 ± 1.01  1.01 ± 1.02  0.99 ± 0.99 
 ## [3,] 1.02 ± 1.01  0.99 ± 1.00  1.00 ± 0.99 
 ## [4,] 1.01 ± 1.01  1.02 ± 1.00  1.00 ± 1.01</code></pre>
-<p>Or any array up to an arbitrary number of dimensions. The array backing an <code>rvar</code> can be accessed (and modified, with caution) via <code>draws_of()</code>:</p>
+<p>Or any array up to an arbitrary number of dimensions. The array
+backing an <code>rvar</code> can be accessed (and modified, with
+caution) via <code>draws_of()</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">draws_of</span>(x))</span></code></pre></div>
 <pre><code>##  num [1:4000, 1:4, 1:3] -0.6879 0.0448 0.3519 1.261 -0.2197 ...
 ##  - attr(*, &quot;dimnames&quot;)=List of 3
 ##   ..$ : chr [1:4000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##   ..$ : NULL
 ##   ..$ : NULL</code></pre>
-<p>While the above examples assume all draws come from a single chain, <code>rvar</code>s can also contain samples from multiple chains. For example, if your array of draws has iterations as the first dimension and chains as the second dimension, you can use <code>with_chains = TRUE</code> to create an <code>rvar</code> that includes chain information:</p>
+<p>While the above examples assume all draws come from a single chain,
+<code>rvar</code>s can also contain samples from multiple chains. For
+example, if your array of draws has iterations as the first dimension
+and chains as the second dimension, you can use
+<code>with_chains = TRUE</code> to create an <code>rvar</code> that
+includes chain information:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>iterations <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>chains <span class="ot">&lt;-</span> <span class="dv">4</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">&lt;-</span> <span class="dv">4</span></span>
@@ -219,12 +445,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## [2,] 1.02 ± 1.00  0.99 ± 1.01  1.01 ± 0.99 
 ## [3,] 1.00 ± 1.00  1.00 ± 1.00  1.01 ± 1.00 
 ## [4,] 1.03 ± 0.99  1.05 ± 1.00  0.98 ± 1.00</code></pre>
-<p>Manual construction and modification of <code>rvar</code>s in this way is not always recommended unless you need it for performance reasons: several other higher-level interfaces to constructing and manipulating <code>rvar</code>s are described below.</p>
+<p>Manual construction and modification of <code>rvar</code>s in this
+way is not always recommended unless you need it for performance
+reasons: several other higher-level interfaces to constructing and
+manipulating <code>rvar</code>s are described below.</p>
 </div>
 <div id="the-draws_rvars-datatype" class="section level2">
 <h2>The <code>draws_rvars</code> datatype</h2>
-<p>The <code>draws_rvars()</code> datatype, like all <code>draws</code> datatypes in posterior, contains multiple variables in a joint sample from some distribution (e.g. a posterior or prior distribution).</p>
-<p>You can construct <code>draws_rvars()</code> objects directly using the <code>draws_rvars()</code> function. The input <code>rvar</code>s must have the same number of chains and iterations, but can otherwise have different shapes:</p>
+<p>The <code>draws_rvars()</code> datatype, like all <code>draws</code>
+datatypes in posterior, contains multiple variables in a joint sample
+from some distribution (e.g. a posterior or prior distribution).</p>
+<p>You can construct <code>draws_rvars()</code> objects directly using
+the <code>draws_rvars()</code> function. The input <code>rvar</code>s
+must have the same number of chains and iterations, but can otherwise
+have different shapes:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">draws_rvars</span>(<span class="at">x =</span> x, <span class="at">y =</span> <span class="fu">rvar</span>(<span class="fu">rnorm</span>(iterations <span class="sc">*</span> chains), <span class="at">nchains =</span> <span class="dv">4</span>))</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>d</span></code></pre></div>
 <pre><code>## # A draws_rvars: 1000 iterations, 4 chains, and 2 variables
@@ -237,7 +471,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## $y: rvar&lt;1000,4&gt;[1] mean ± sd:
 ## [1] 0.0034 ± 1</code></pre>
-<p>Existing objects can also be converted to the <code>draws_rvars()</code> format using <code>as_draws_rvars()</code>. Below is the <code>example_draws(&quot;multi_normal&quot;)</code> dataset converted into the <code>draws_rvars()</code> format. This dataset has 100 iterations from 4 chains from the posterior of a a 3-dimensional multivariate normal model. The <code>mu</code> variable is a mean vector of length 3 and the <code>Sigma</code> variable is a <span class="math inline">\(3 \times 3\)</span> covariance matrix:</p>
+<p>Existing objects can also be converted to the
+<code>draws_rvars()</code> format using <code>as_draws_rvars()</code>.
+Below is the <code>example_draws(&quot;multi_normal&quot;)</code> dataset
+converted into the <code>draws_rvars()</code> format. This dataset has
+100 iterations from 4 chains from the posterior of a a 3-dimensional
+multivariate normal model. The <code>mu</code> variable is a mean vector
+of length 3 and the <code>Sigma</code> variable is a <span class="math inline">\(3 \times 3\)</span> covariance matrix:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">as_draws_rvars</span>(<span class="fu">example_draws</span>(<span class="st">&quot;multi_normal&quot;</span>))</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>post</span></code></pre></div>
 <pre><code>## # A draws_rvars: 100 iterations, 4 chains, and 2 variables
@@ -249,10 +489,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## [1,]  1.28 ± 0.17   0.53 ± 0.20  -0.40 ± 0.28 
 ## [2,]  0.53 ± 0.20   3.67 ± 0.45  -2.10 ± 0.48 
 ## [3,] -0.40 ± 0.28  -2.10 ± 0.48   8.12 ± 0.95</code></pre>
-<p>The <code>draws_rvars()</code> datatype works much the same way that other <code>draws</code> formats do; see the main package vignette at <code>vignette(&quot;posterior&quot;)</code> for an introduction to <code>draws</code> objects. One difference is that <code>draws_rvars</code> counts variables differently, because it allows variables to be multidimensional. For example, the <code>post</code> object above contains two variables, <code>mu</code> and <code>Sigma</code>:</p>
+<p>The <code>draws_rvars()</code> datatype works much the same way that
+other <code>draws</code> formats do; see the main package vignette at
+<code>vignette(&quot;posterior&quot;)</code> for an introduction to
+<code>draws</code> objects. One difference is that
+<code>draws_rvars</code> counts variables differently, because it allows
+variables to be multidimensional. For example, the <code>post</code>
+object above contains two variables, <code>mu</code> and
+<code>Sigma</code>:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">variables</span>(post)</span></code></pre></div>
 <pre><code>## [1] &quot;mu&quot;    &quot;Sigma&quot;</code></pre>
-<p>But converted to a <code>draws_list()</code>, it contains one variable for each combination of the dimensions of its variables:</p>
+<p>But converted to a <code>draws_list()</code>, it contains one
+variable for each combination of the dimensions of its variables:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">variables</span>(<span class="fu">as_draws_list</span>(post))</span></code></pre></div>
 <pre><code>##  [1] &quot;mu[1]&quot;      &quot;mu[2]&quot;      &quot;mu[3]&quot;      &quot;Sigma[1,1]&quot; &quot;Sigma[2,1]&quot;
 ##  [6] &quot;Sigma[3,1]&quot; &quot;Sigma[1,2]&quot; &quot;Sigma[2,2]&quot; &quot;Sigma[3,2]&quot; &quot;Sigma[1,3]&quot;
@@ -260,21 +508,31 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="math-with-rvars" class="section level2">
 <h2>Math with <code>rvar</code>s</h2>
-<p>The <code>rvar()</code> datatype implements most math operations, including basic arithmetic, functions in the <em>Math</em> and <em>Summary</em> groups, like <code>log()</code> and <code>exp()</code> (see <code>help(&quot;groupGeneric&quot;)</code> for a list), and more. Binary operators can be performed between multiple <code>rvar</code>s or between <code>rvar</code>s and <code>numeric</code>s. A simple example:</p>
+<p>The <code>rvar()</code> datatype implements most math operations,
+including basic arithmetic, functions in the <em>Math</em> and
+<em>Summary</em> groups, like <code>log()</code> and <code>exp()</code>
+(see <code>help(&quot;groupGeneric&quot;)</code> for a list), and more. Binary
+operators can be performed between multiple <code>rvar</code>s or
+between <code>rvar</code>s and <code>numeric</code>s. A simple
+example:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> post<span class="sc">$</span>mu</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> post<span class="sc">$</span>Sigma</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>mu <span class="sc">+</span> <span class="dv">1</span></span></code></pre></div>
 <pre><code>## rvar&lt;100,4&gt;[3] mean ± sd:
 ## [1] 1.1 ± 0.11  1.1 ± 0.20  1.2 ± 0.31</code></pre>
-<p>Matrix multiplication is also implemented (using a tensor product under the hood). Because the normal matrix multiplication operator in R (<code>%*%</code>) cannot be properly implemented for S3 datatypes, <code>rvar</code> uses <code>%**%</code> instead. A trivial example:</p>
+<p>Matrix multiplication is also implemented (using a tensor product
+under the hood). Because the normal matrix multiplication operator in R
+(<code>%*%</code>) cannot be properly implemented for S3 datatypes,
+<code>rvar</code> uses <code>%**%</code> instead. A trivial example:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>Sigma <span class="sc">%**%</span> <span class="fu">diag</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## rvar&lt;100,4&gt;[3,3] mean ± sd:
 ##      [,1]          [,2]          [,3]         
 ## [1,]  1.28 ± 0.17   1.05 ± 0.40  -1.21 ± 0.85 
 ## [2,]  0.53 ± 0.20   7.33 ± 0.89  -6.30 ± 1.44 
 ## [3,] -0.40 ± 0.28  -4.20 ± 0.96  24.35 ± 2.84</code></pre>
-<p>The set of mathematical functions and operators supported by <code>rvar</code>s includes:</p>
+<p>The set of mathematical functions and operators supported by
+<code>rvar</code>s includes:</p>
 <table>
 <colgroup>
 <col width="53%" />
@@ -289,7 +547,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <tbody>
 <tr class="odd">
 <td align="left">Arithmetic operators</td>
-<td align="left"><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code>, <code>%%</code>, <code>%/%</code></td>
+<td align="left"><code>+</code>, <code>-</code>, <code>*</code>,
+<code>/</code>, <code>^</code>, <code>%%</code>, <code>%/%</code></td>
 </tr>
 <tr class="even">
 <td align="left">Logical operators</td>
@@ -297,7 +556,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="odd">
 <td align="left">Comparison operators</td>
-<td align="left"><code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>&gt;</code></td>
+<td align="left"><code>==</code>, <code>!=</code>, <code>&lt;</code>,
+<code>&lt;=</code>, <code>&gt;=</code>, <code>&gt;</code></td>
 </tr>
 <tr class="even">
 <td align="left">Matrix multiplication</td>
@@ -305,27 +565,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="odd">
 <td align="left">Basic functions</td>
-<td align="left"><code>abs()</code>, <code>sign()</code><br><code>sqrt()</code><br><code>floor()</code>, <code>ceiling()</code>, <code>trunc()</code>, <code>round()</code>, <code>signif()</code></td>
+<td align="left"><code>abs()</code>,
+<code>sign()</code><br><code>sqrt()</code><br><code>floor()</code>,
+<code>ceiling()</code>, <code>trunc()</code>, <code>round()</code>,
+<code>signif()</code></td>
 </tr>
 <tr class="even">
 <td align="left">Logarithms and exponentials</td>
-<td align="left"><code>exp()</code>, <code>expm1()</code><br><code>log()</code>, <code>log10()</code>, <code>log2()</code>, <code>log1p()</code></td>
+<td align="left"><code>exp()</code>,
+<code>expm1()</code><br><code>log()</code>, <code>log10()</code>,
+<code>log2()</code>, <code>log1p()</code></td>
 </tr>
 <tr class="odd">
 <td align="left">Trigonometric functions</td>
-<td align="left"><code>cos()</code>, <code>sin()</code>, <code>tan()</code><br><code>cospi()</code>, <code>sinpi()</code>, <code>tanpi()</code><br><code>acos()</code>, <code>asin()</code>, <code>atan()</code></td>
+<td align="left"><code>cos()</code>, <code>sin()</code>,
+<code>tan()</code><br><code>cospi()</code>, <code>sinpi()</code>,
+<code>tanpi()</code><br><code>acos()</code>, <code>asin()</code>,
+<code>atan()</code></td>
 </tr>
 <tr class="even">
 <td align="left">Hyperbolic functions</td>
-<td align="left"><code>cosh()</code>, <code>sinh()</code>, <code>tanh()</code><br><code>acosh()</code>, <code>asinh()</code>, <code>atanh()</code></td>
+<td align="left"><code>cosh()</code>, <code>sinh()</code>,
+<code>tanh()</code><br><code>acosh()</code>, <code>asinh()</code>,
+<code>atanh()</code></td>
 </tr>
 <tr class="odd">
 <td align="left">Special functions</td>
-<td align="left"><code>lgamma()</code>, <code>gamma()</code>, <code>digamma()</code>, <code>trigamma()</code></td>
+<td align="left"><code>lgamma()</code>, <code>gamma()</code>,
+<code>digamma()</code>, <code>trigamma()</code></td>
 </tr>
 <tr class="even">
 <td align="left">Cumulative functions</td>
-<td align="left"><code>cumsum()</code>, <code>cumprod()</code>, <code>cummax()</code>, <code>cummin()</code></td>
+<td align="left"><code>cumsum()</code>, <code>cumprod()</code>,
+<code>cummax()</code>, <code>cummin()</code></td>
 </tr>
 <tr class="odd">
 <td align="left">Array transposition</td>
@@ -340,26 +612,47 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="expectations-and-summary-functions" class="section level2">
 <h2>Expectations and summary functions</h2>
-<p>The <code>E()</code> function is an alias of <code>mean()</code>, producing means within each cell of an <code>rvar</code>. For example, given <code>mu</code>:</p>
+<p>The <code>E()</code> function is an alias of <code>mean()</code>,
+producing means within each cell of an <code>rvar</code>. For example,
+given <code>mu</code>:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>mu</span></code></pre></div>
 <pre><code>## rvar&lt;100,4&gt;[3] mean ± sd:
 ## [1] 0.051 ± 0.11  0.111 ± 0.20  0.186 ± 0.31</code></pre>
 <p>We can get the expectation of each cell of <code>mu</code>:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">E</span>(mu)</span></code></pre></div>
 <pre><code>## [1] 0.05139284 0.11132363 0.18581977</code></pre>
-<p>Expectations of logical expressions are probabilities, and can be computed either with <code>E()</code> / <code>mean()</code> or with <code>Pr()</code>. <code>Pr()</code> is provided as notational sugar, but also checks that the input is a logical variable before taking the mean:</p>
+<p>Expectations of logical expressions are probabilities, and can be
+computed either with <code>E()</code> / <code>mean()</code> or with
+<code>Pr()</code>. <code>Pr()</code> is provided as notational sugar,
+but also checks that the input is a logical variable before taking the
+mean:</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Pr</span>(mu <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div>
 <pre><code>## [1] 0.6600 0.6900 0.7025</code></pre>
-<p>More generally, the <code>rvar</code> data type provides two types of summary functions:</p>
+<p>More generally, the <code>rvar</code> data type provides two types of
+summary functions:</p>
 <ol style="list-style-type: decimal">
-<li><p>Summary functions that mimic base-R vector summary functions, except applied to <code>rvar</code> vectors. These apply their summaries <strong>over</strong> elements of the input vectors <strong>within</strong> each draw, generally returning an <code>rvar</code> of length 1. These functions are prefixed with <code>rvar_</code> as a reminder that they return <code>rvar</code>s. Here is an example of <code>rvar_mean()</code>:</p>
+<li><p>Summary functions that mimic base-R vector summary functions,
+except applied to <code>rvar</code> vectors. These apply their summaries
+<strong>over</strong> elements of the input vectors
+<strong>within</strong> each draw, generally returning an
+<code>rvar</code> of length 1. These functions are prefixed with
+<code>rvar_</code> as a reminder that they return <code>rvar</code>s.
+Here is an example of <code>rvar_mean()</code>:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rvar_mean</span>(mu)</span></code></pre></div>
 <pre><code>## rvar&lt;100,4&gt;[1] mean ± sd:
 ## [1] 0.12 ± 0.11</code></pre></li>
-<li><p>Summary functions that summarise <strong>within</strong> elements of input vectors and <strong>over</strong> draws. These summary functions generally return base arrays (<code>numeric</code> or <code>logical</code>) of the same shape as the input <code>rvar</code>, and are especially useful for diagnostic summaries. These summary functions are not prefixed with <code>rvar_</code> as they do not return <code>rvar</code>s. Here is an example of <code>mean()</code>:</p>
+<li><p>Summary functions that summarise <strong>within</strong> elements
+of input vectors and <strong>over</strong> draws. These summary
+functions generally return base arrays (<code>numeric</code> or
+<code>logical</code>) of the same shape as the input <code>rvar</code>,
+and are especially useful for diagnostic summaries. These summary
+functions are not prefixed with <code>rvar_</code> as they do not return
+<code>rvar</code>s. Here is an example of <code>mean()</code>:</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(mu)</span></code></pre></div>
 <pre><code>## [1] 0.05139284 0.11132363 0.18581977</code></pre>
-<p>You should expect the same values from these functions (though in a different shape) when you use them with <code>summarise_draws()</code>, for example:</p>
+<p>You should expect the same values from these functions (though in a
+different shape) when you use them with <code>summarise_draws()</code>,
+for example:</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise_draws</span>(mu, mean)</span></code></pre></div>
 <pre><code>## # A tibble: 3 × 2
 ##   variable   mean
@@ -378,15 +671,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <thead>
 <tr class="header">
 <th></th>
-<th align="left">1. Summarise <em>within</em> draws,<br><em>over</em> elements</th>
-<th align="left">2. Summarise <em>over</em> draws,<br><em>within</em> elements<br></th>
+<th align="left">1. Summarise <em>within</em> draws,<br><em>over</em>
+elements</th>
+<th align="left">2. Summarise <em>over</em> draws,<br><em>within</em>
+elements<br></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><strong>Output format</strong><br>of <code>res = f(x)</code></td>
 <td align="left"><code>rvar</code> of length 1</td>
-<td align="left"><code>array</code> of same shape as input <code>rvar</code></td>
+<td align="left"><code>array</code> of same shape as input
+<code>rvar</code></td>
 </tr>
 <tr class="even">
 <td><strong>Help page</strong></td>
@@ -395,28 +691,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="odd">
 <td>Numeric summaries</td>
-<td align="left"><code>rvar_median()</code><br><code>rvar_sum()</code>, <code>rvar_prod()</code><br><code>rvar_min()</code>, <code>rvar_max()</code></td>
-<td align="left"><code>median()</code><br><code>sum()</code>, <code>prod()</code><br><code>min()</code>, <code>max()</code></td>
+<td align="left"><code>rvar_median()</code><br><code>rvar_sum()</code>,
+<code>rvar_prod()</code><br><code>rvar_min()</code>,
+<code>rvar_max()</code></td>
+<td align="left"><code>median()</code><br><code>sum()</code>,
+<code>prod()</code><br><code>min()</code>, <code>max()</code></td>
 </tr>
 <tr class="even">
 <td>Mean</td>
 <td align="left"><code>rvar_mean()</code><br><em>N/A</em></td>
-<td align="left"><code>mean()</code>, <code>E()</code><br><code>Pr()</code>: enforces that input is <code>logical</code></td>
+<td align="left"><code>mean()</code>,
+<code>E()</code><br><code>Pr()</code>: enforces that input is
+<code>logical</code></td>
 </tr>
 <tr class="odd">
 <td>Spread</td>
-<td align="left"><code>rvar_sd()</code> <br><code>rvar_var()</code> <br> <code>rvar_mad()</code></td>
-<td align="left"><code>sd()</code><br><code>var()</code>, <code>variance()</code><br> <code>mad()</code></td>
+<td align="left"><code>rvar_sd()</code> <br><code>rvar_var()</code> <br>
+<code>rvar_mad()</code></td>
+<td align="left"><code>sd()</code><br><code>var()</code>,
+<code>variance()</code><br> <code>mad()</code></td>
 </tr>
 <tr class="even">
 <td>Range</td>
-<td align="left"><code>rvar_range()</code><br><strong>Note:</strong> <code>length(res) == 2</code></td>
-<td align="left"><code>range()</code><br><strong>Note:</strong> <code>dim(res) == c(2, dim(x))</code></td>
+<td align="left"><code>rvar_range()</code><br><strong>Note:</strong>
+<code>length(res) == 2</code></td>
+<td align="left"><code>range()</code><br><strong>Note:</strong>
+<code>dim(res) == c(2, dim(x))</code></td>
 </tr>
 <tr class="odd">
 <td>Quantiles</td>
-<td align="left"><code>rvar_quantile()</code><br><strong>Note:</strong> <code>length(res) == length(probs)</code></td>
-<td align="left"><code>quantile()</code><br><strong>Note:</strong> <code>dim(res) == c(length(probs), dim(x))</code></td>
+<td align="left"><code>rvar_quantile()</code><br><strong>Note:</strong>
+<code>length(res) == length(probs)</code></td>
+<td align="left"><code>quantile()</code><br><strong>Note:</strong>
+<code>dim(res) == c(length(probs), dim(x))</code></td>
 </tr>
 <tr class="even">
 <td>Logical summaries</td>
@@ -425,97 +732,170 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="odd">
 <td>Special value predicates</td>
-<td align="left"><code>rvar_is_finite()</code><br><code>rvar_is_infinite()</code><br><code>rvar_is_nan()</code><br><code>rvar_is_na()</code><br><strong>Note:</strong> <code>dim(res) == dim(x)</code>. These functions act within draws but do not summarise over elements.</td>
-<td align="left"><code>is.finite()</code><br><code>is.infinite()</code><br><code>is.nan()</code><br><code>is.na()</code><br><strong>Note:</strong> <code>res[i] == TRUE</code> if <code>x[i]</code> has any draws matching predicate (except for <code>is.finite()</code>, where all draws in <code>x[i]</code> must match)</td>
+<td align="left"><code>rvar_is_finite()</code><br><code>rvar_is_infinite()</code><br><code>rvar_is_nan()</code><br><code>rvar_is_na()</code><br><strong>Note:</strong>
+<code>dim(res) == dim(x)</code>. These functions act within draws but do
+not summarise over elements.</td>
+<td align="left"><code>is.finite()</code><br><code>is.infinite()</code><br><code>is.nan()</code><br><code>is.na()</code><br><strong>Note:</strong>
+<code>res[i] == TRUE</code> if <code>x[i]</code> has any draws matching
+predicate (except for <code>is.finite()</code>, where all draws in
+<code>x[i]</code> must match)</td>
 </tr>
 <tr class="even">
 <td>Diagnostics</td>
 <td align="left"><em>N/A</em></td>
-<td align="left"><code>ess_basic()</code>, <code>ess_bulk()</code>, <code>ess_quantile()</code>, <code>ess_sd()</code>, <code>ess_tail()</code>,<br><code>mcse_mean()</code>, <code>mcse_quantile()</code>, <code>mcse_sd()</code><br><code>rhat()</code>, <code>rhat_basic()</code></td>
+<td align="left"><code>ess_basic()</code>, <code>ess_bulk()</code>,
+<code>ess_quantile()</code>, <code>ess_sd()</code>,
+<code>ess_tail()</code>,<br><code>mcse_mean()</code>,
+<code>mcse_quantile()</code>,
+<code>mcse_sd()</code><br><code>rhat()</code>,
+<code>rhat_basic()</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="constants" class="section level2">
 <h2>Constants</h2>
-<p>Constant <code>rvar</code>s can be constructed by converting numeric vectors or arrays into <code>rvar</code>s using <code>as_rvar()</code>, which will return an <code>rvar</code> with one draw and the same dimensions as its input:</p>
+<p>Constant <code>rvar</code>s can be constructed by converting numeric
+vectors or arrays into <code>rvar</code>s using <code>as_rvar()</code>,
+which will return an <code>rvar</code> with one draw and the same
+dimensions as its input:</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>const <span class="ot">&lt;-</span> <span class="fu">as_rvar</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>const</span></code></pre></div>
 <pre><code>## rvar&lt;1&gt;[3] mean ± sd:
 ## [1] 1 ± NA  2 ± NA  3 ± NA</code></pre>
-<p>While normally <code>rvar</code>s must have the same number of draws to be used in the same expression, <code>rvar</code>s with one draw are treated like constants, and can be combined with other <code>rvar</code>s:</p>
+<p>While normally <code>rvar</code>s must have the same number of draws
+to be used in the same expression, <code>rvar</code>s with one draw are
+treated like constants, and can be combined with other
+<code>rvar</code>s:</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>mu <span class="sc">+</span> const</span></code></pre></div>
 <pre><code>## rvar&lt;100,4&gt;[3] mean ± sd:
 ## [1] 1.1 ± 0.11  2.1 ± 0.20  3.2 ± 0.31</code></pre>
 </div>
 <div id="using-existing-r-functions-and-expressions-with-rvars" class="section level2">
-<h2>Using existing R functions and expressions with <code>rvar</code>s</h2>
-<p>While <code>rvar</code>s attempt to emulate as much of the functionality of base R arrays as possible, there are situations in which an existing R function may not work directly with an <code>rvar</code>. There are several approaches to solving this problem.</p>
-<p>For example, say you wish to generate samples from the following expression for <span class="math inline">\(\mu\)</span>, <span class="math inline">\(\sigma\)</span>, and <span class="math inline">\(x\)</span>:</p>
+<h2>Using existing R functions and expressions with
+<code>rvar</code>s</h2>
+<p>While <code>rvar</code>s attempt to emulate as much of the
+functionality of base R arrays as possible, there are situations in
+which an existing R function may not work directly with an
+<code>rvar</code>. There are several approaches to solving this
+problem.</p>
+<p>For example, say you wish to generate samples from the following
+expression for <span class="math inline">\(\mu\)</span>, <span class="math inline">\(\sigma\)</span>, and <span class="math inline">\(x\)</span>:</p>
 <p><span class="math display">\[
 \begin{align}
-\left[\begin{matrix}\mu_1 \\ \vdots \\ \mu_4 \end{matrix}\right] &amp;\sim \textrm{Normal}\left(\left[\begin{matrix}1 \\ \vdots \\ 4 \end{matrix}\right],1\right)\\
+\left[\begin{matrix}\mu_1 \\ \vdots \\ \mu_4 \end{matrix}\right]
+&amp;\sim \textrm{Normal}\left(\left[\begin{matrix}1 \\ \vdots \\ 4
+\end{matrix}\right],1\right)\\
 \sigma &amp;\sim \textrm{Gamma}(1,1)\\
-\left[\begin{matrix}x_1 \\ \vdots \\ x_4 \end{matrix}\right] &amp;\sim \textrm{Normal}\left(\left[\begin{matrix}\mu_1 \\ \vdots \\ \mu_4 \end{matrix}\right], \sigma\right)
+\left[\begin{matrix}x_1 \\ \vdots \\ x_4 \end{matrix}\right] &amp;\sim
+\textrm{Normal}\left(\left[\begin{matrix}\mu_1 \\ \vdots \\ \mu_4
+\end{matrix}\right], \sigma\right)
 \end{align}
 \]</span></p>
-<p>There are three different approaches you might take to doing this: converting existing R functions with <code>rfun()</code>, executing expressions of random variables with <code>rdo()</code>, or evaluating random number generator functions using <code>rvar_rng()</code>.</p>
+<p>There are three different approaches you might take to doing this:
+converting existing R functions with <code>rfun()</code>, executing
+expressions of random variables with <code>rdo()</code>, or evaluating
+random number generator functions using <code>rvar_rng()</code>.</p>
 <div id="converting-functions-with-rfun" class="section level3">
 <h3>Converting functions with <code>rfun()</code></h3>
-<p>The <code>rfun()</code> wrapper converts an existing R function into a new function that <code>rvar</code>s can be passed to it as arguments, and which will return <code>rvar</code>s. We can use <code>rfun()</code> to convert the base <code>rnorm()</code> and <code>rgamma()</code> random number generating functions into functions that accept and return <code>rvar</code>s:</p>
+<p>The <code>rfun()</code> wrapper converts an existing R function into
+a new function that <code>rvar</code>s can be passed to it as arguments,
+and which will return <code>rvar</code>s. We can use <code>rfun()</code>
+to convert the base <code>rnorm()</code> and <code>rgamma()</code>
+random number generating functions into functions that accept and return
+<code>rvar</code>s:</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>rvar_norm <span class="ot">&lt;-</span> <span class="fu">rfun</span>(rnorm)</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>rvar_gamma <span class="ot">&lt;-</span> <span class="fu">rfun</span>(rgamma)</span></code></pre></div>
-<p>Then we can translate the above example into code using those functions:</p>
+<p>Then we can translate the above example into code using those
+functions:</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">rvar_norm</span>(<span class="dv">4</span>, <span class="at">mean =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="fu">rvar_gamma</span>(<span class="dv">1</span>, <span class="at">shape =</span> <span class="dv">1</span>, <span class="at">rate =</span> <span class="dv">1</span>)</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rvar_norm</span>(<span class="dv">4</span>, mu, sigma)</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>x</span></code></pre></div>
 <pre><code>## rvar&lt;4000&gt;[4] mean ± sd:
 ## [1] 0.99 ± 1.7  1.98 ± 1.7  2.99 ± 1.8  4.01 ± 1.7</code></pre>
-<p>While <code>rfun()</code>-converted functions work well for prototyping, they will generally speaking be slower than functions designed specifically for <code>rvar</code>s. Thus, you may find you need to adopt other strategies (like <code>rvar_rng()</code>, described below; or re-writing functions to support <code>rvar</code> directly using math operators and/or the <code>draws_of()</code> function).</p>
+<p>While <code>rfun()</code>-converted functions work well for
+prototyping, they will generally speaking be slower than functions
+designed specifically for <code>rvar</code>s. Thus, you may find you
+need to adopt other strategies (like <code>rvar_rng()</code>, described
+below; or re-writing functions to support <code>rvar</code> directly
+using math operators and/or the <code>draws_of()</code> function).</p>
 </div>
 <div id="evaluating-expressions-with-rdo" class="section level3">
 <h3>Evaluating expressions with <code>rdo()</code></h3>
-<p>An alternative to <code>rfun()</code> is to use <code>rdo()</code>, which can be passed nearly-arbitrary R expressions. The expression will be executed multiple times to construct an <code>rvar</code>. E.g., we can write an expression for <code>mu</code> like in the above example:</p>
+<p>An alternative to <code>rfun()</code> is to use <code>rdo()</code>,
+which can be passed nearly-arbitrary R expressions. The expression will
+be executed multiple times to construct an <code>rvar</code>. E.g., we
+can write an expression for <code>mu</code> like in the above
+example:</p>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">rdo</span>(<span class="fu">rnorm</span>(<span class="dv">4</span>, <span class="at">mean =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">sd =</span> <span class="dv">1</span>))</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>mu</span></code></pre></div>
 <pre><code>## rvar&lt;4000&gt;[4] mean ± sd:
 ## [1] 1 ± 1.01  2 ± 1.01  3 ± 0.99  4 ± 1.02</code></pre>
-<p>We can also control the number of draws using the <code>ndraws</code> argument:</p>
+<p>We can also control the number of draws using the <code>ndraws</code>
+argument:</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">rdo</span>(<span class="fu">rnorm</span>(<span class="dv">4</span>, <span class="at">mean =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">sd =</span> <span class="dv">1</span>), <span class="at">ndraws =</span> <span class="dv">1000</span>)</span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>mu</span></code></pre></div>
 <pre><code>## rvar&lt;1000&gt;[4] mean ± sd:
 ## [1] 0.98 ± 0.98  2.03 ± 1.03  2.98 ± 0.98  4.03 ± 1.02</code></pre>
-<p><code>rdo()</code> expressions can also contain other <code>rvar</code>s, so long as all <code>rvar</code>s in the expression have the same number of draws. Thus, we can re-write the example above that used <code>rfun()</code> as follows:</p>
+<p><code>rdo()</code> expressions can also contain other
+<code>rvar</code>s, so long as all <code>rvar</code>s in the expression
+have the same number of draws. Thus, we can re-write the example above
+that used <code>rfun()</code> as follows:</p>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">rdo</span>(<span class="fu">rnorm</span>(<span class="dv">4</span>, <span class="at">mean =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">sd =</span> <span class="dv">1</span>))</span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="fu">rdo</span>(<span class="fu">rgamma</span>(<span class="dv">1</span>, <span class="at">shape =</span> <span class="dv">1</span>, <span class="at">rate =</span> <span class="dv">1</span>))</span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rdo</span>(<span class="fu">rnorm</span>(<span class="dv">4</span>, mu, sigma))</span>
 <span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>x</span></code></pre></div>
 <pre><code>## rvar&lt;4000&gt;[4] mean ± sd:
 ## [1] 1 ± 1.7  2 ± 1.7  3 ± 1.7  4 ± 1.7</code></pre>
-<p>Like <code>rfun()</code>, <code>rdo()</code> is not necessarily fast, so you may find it more useful for prototyping than production code.</p>
+<p>Like <code>rfun()</code>, <code>rdo()</code> is not necessarily fast,
+so you may find it more useful for prototyping than production code.</p>
 </div>
 <div id="evaluating-random-number-generators-with-rvar_rng" class="section level3">
-<h3>Evaluating random number generators with <code>rvar_rng()</code></h3>
-<p><code>rvar_rng()</code> is an alternative to <code>rfun()</code>/<code>rdo()</code> designed specifically to work with random number generating functions that follow the typical API of such functions in base R. Such functions, like <code>rnorm()</code>, <code>rgamma()</code>, <code>rbinom()</code>, etc all following this interface:</p>
+<h3>Evaluating random number generators with
+<code>rvar_rng()</code></h3>
+<p><code>rvar_rng()</code> is an alternative to
+<code>rfun()</code>/<code>rdo()</code> designed specifically to work
+with random number generating functions that follow the typical API of
+such functions in base R. Such functions, like <code>rnorm()</code>,
+<code>rgamma()</code>, <code>rbinom()</code>, etc all following this
+interface:</p>
 <ul>
-<li>They have a first argument, <code>n</code>, giving the number of draws to take from the distribution.</li>
-<li>Their arguments for distribution parameters (<code>mean</code>, <code>sd</code>, <code>shape</code>, <code>rate</code>, etc.) are vectorized.</li>
-<li>They return a single vector of length <code>n</code>, representing <code>n</code> draws from the distribution.</li>
+<li>They have a first argument, <code>n</code>, giving the number of
+draws to take from the distribution.</li>
+<li>Their arguments for distribution parameters (<code>mean</code>,
+<code>sd</code>, <code>shape</code>, <code>rate</code>, etc.) are
+vectorized.</li>
+<li>They return a single vector of length <code>n</code>, representing
+<code>n</code> draws from the distribution.</li>
 </ul>
-<p>You can use any function with this interface with <code>rvar_rng()</code>, and it will adapt it to be able to take <code>rvar</code> arguments and return an <code>rvar</code>, as follows:</p>
+<p>You can use any function with this interface with
+<code>rvar_rng()</code>, and it will adapt it to be able to take
+<code>rvar</code> arguments and return an <code>rvar</code>, as
+follows:</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">rvar_rng</span>(rnorm, <span class="dv">4</span>, <span class="at">mean =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="fu">rvar_rng</span>(rgamma, <span class="dv">1</span>, <span class="at">shape =</span> <span class="dv">1</span>, <span class="at">rate =</span> <span class="dv">1</span>)</span>
 <span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rvar_rng</span>(rnorm, <span class="dv">4</span>, mu, sigma)</span>
 <span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>x</span></code></pre></div>
 <pre><code>## rvar&lt;4000&gt;[4] mean ± sd:
 ## [1] 1 ± 1.7  2 ± 1.8  3 ± 1.7  4 ± 1.7</code></pre>
-<p>In contrast to the <code>rfun()</code> and <code>rdo()</code> examples above, <code>rvar_rng()</code> takes advantage of the existing vectorization of the underlying random number generating function to execute quickly.</p>
+<p>In contrast to the <code>rfun()</code> and <code>rdo()</code>
+examples above, <code>rvar_rng()</code> takes advantage of the existing
+vectorization of the underlying random number generating function to
+execute quickly.</p>
 </div>
 </div>
 <div id="broadcasting" class="section level2">
 <h2>Broadcasting</h2>
-<p>Broadcasting for <code>rvar</code>s does not follow R’s vector recycling rules. Instead, when two variables with different dimensions are being used with basic arithmetic functions, dimensions are added until both variables have the same number of dimensions. If two variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> differ on the length of dimension <span class="math inline">\(d\)</span>, they can be broadcast to the same size so long as one of the variables has dimension <span class="math inline">\(d\)</span> of size 1. Then that variable will be broadcast up to the same size as the other variable along that dimension. If two variables disagree on the size of a dimension and neither has size 1, it is an error.</p>
+<p>Broadcasting for <code>rvar</code>s does not follow R’s vector
+recycling rules. Instead, when two variables with different dimensions
+are being used with basic arithmetic functions, dimensions are added
+until both variables have the same number of dimensions. If two
+variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> differ on the length of dimension <span class="math inline">\(d\)</span>, they can be broadcast to the same size
+so long as one of the variables has dimension <span class="math inline">\(d\)</span> of size 1. Then that variable will be
+broadcast up to the same size as the other variable along that
+dimension. If two variables disagree on the size of a dimension and
+neither has size 1, it is an error.</p>
 <p>For example, consider this random matrix:</p>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">rdo</span>(<span class="fu">rnorm</span>(<span class="dv">12</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>), <span class="at">dim =</span> <span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">3</span>))</span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>X</span></code></pre></div>
@@ -530,11 +910,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>y</span></code></pre></div>
 <pre><code>## rvar&lt;4000&gt;[3] mean ± sd:
 ## [1] 3 ± 1  2 ± 1  1 ± 1</code></pre>
-<p>If we attempt to add <code>X</code> and <code>y</code>, it will produce an error as vectors are by default treated as column vectors, and <code>y</code> has length 3 while columns of <code>X</code> have length 4:</p>
+<p>If we attempt to add <code>X</code> and <code>y</code>, it will
+produce an error as vectors are by default treated as column vectors,
+and <code>y</code> has length 3 while columns of <code>X</code> have
+length 4:</p>
 <div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>X <span class="sc">+</span> y</span></code></pre></div>
 <pre><code>## Error: Cannot broadcast array of shape [4000,3,1] to array of shape [4000,4,3]:
 ## All dimensions must be 1 or equal.</code></pre>
-<p>By contrast, R arrays of the same shape will simply recycle <code>y</code> until it is the same length as <code>X</code> (regardless of the dimensions). Thus will produce a result, though likely not the intended result:</p>
+<p>By contrast, R arrays of the same shape will simply recycle
+<code>y</code> until it is the same length as <code>X</code> (regardless
+of the dimensions). Thus will produce a result, though likely not the
+intended result:</p>
 <div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(X) <span class="sc">+</span> <span class="fu">mean</span>(y)</span></code></pre></div>
 <pre><code>##          [,1]     [,2]     [,3]
 ## [1,] 4.010833 6.970957 10.01651
@@ -547,7 +933,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## rvar&lt;4000&gt;[1,3] mean ± sd:
 ##      [,1]   [,2]   [,3]  
 ## [1,] 3 ± 1  2 ± 1  1 ± 1</code></pre>
-<p>…it would have the same number of columns as <code>X</code> and contain only one row, so it can be broadcast along rows of <code>X</code>:</p>
+<p>…it would have the same number of columns as <code>X</code> and
+contain only one row, so it can be broadcast along rows of
+<code>X</code>:</p>
 <div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>X <span class="sc">+</span> row_y</span></code></pre></div>
 <pre><code>## rvar&lt;4000&gt;[4,3] mean ± sd:
 ##      [,1]      [,2]      [,3]     
@@ -558,7 +946,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="applying-functions-over-rvars" class="section level2">
 <h2>Applying functions over <code>rvar</code>s</h2>
-<p>The <code>rvar</code> data type supplies an implementation of <code>as.list()</code>, which should give compatibility with the base R family of functions for applying functions over arrays: <code>apply()</code>, <code>lapply()</code>, <code>vapply()</code>, <code>sapply()</code>, etc. You can also manually use <code>as.list()</code> to convert an <code>rvar</code> into a list along its first dimension, which may be necessary for compatibility with some functions (like <code>purrr:map()</code>).</p>
+<p>The <code>rvar</code> data type supplies an implementation of
+<code>as.list()</code>, which should give compatibility with the base R
+family of functions for applying functions over arrays:
+<code>apply()</code>, <code>lapply()</code>, <code>vapply()</code>,
+<code>sapply()</code>, etc. You can also manually use
+<code>as.list()</code> to convert an <code>rvar</code> into a list along
+its first dimension, which may be necessary for compatibility with some
+functions (like <code>purrr:map()</code>).</p>
 <p>For example, given this multidimensional <code>rvar</code>…</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3456</span>)</span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rvar_rng</span>(rnorm, <span class="dv">24</span>, <span class="at">mean =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">24</span>)</span>
@@ -588,13 +983,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##      [,1]       [,2]       [,3]      
 ## [1,] 19 ± 0.99  21 ± 0.99  23 ± 0.99 
 ## [2,] 20 ± 1.00  22 ± 1.00  24 ± 1.00</code></pre>
-<p>… you can apply functions along the margins using <code>apply()</code> (here, a silly example):</p>
+<p>… you can apply functions along the margins using
+<code>apply()</code> (here, a silly example):</p>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(x, <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), length)</span></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    4    4    4
 ## [2,]    4    4    4</code></pre>
-<p>One exception is that while <code>apply()</code> will work with an <code>rvar</code> input if your function returns base data types (like numerics), it will not give you simplified <code>rvar</code> arrays if your function returns an <code>rvar</code>. Thus, we supply the <code>rvar_apply()</code> function, which takes in either base arrays or <code>rvar</code> arrays and returns <code>rvar</code> arrays, and which also uses the <code>rvar</code> broadcasting rules to combine the results of the applied function.</p>
-<p>For example, you can use <code>rvar_apply()</code> with <code>rvar_mean()</code> to compute the distributions of means along one margin of an array:</p>
+<p>One exception is that while <code>apply()</code> will work with an
+<code>rvar</code> input if your function returns base data types (like
+numerics), it will not give you simplified <code>rvar</code> arrays if
+your function returns an <code>rvar</code>. Thus, we supply the
+<code>rvar_apply()</code> function, which takes in either base arrays or
+<code>rvar</code> arrays and returns <code>rvar</code> arrays, and which
+also uses the <code>rvar</code> broadcasting rules to combine the
+results of the applied function.</p>
+<p>For example, you can use <code>rvar_apply()</code> with
+<code>rvar_mean()</code> to compute the distributions of means along one
+margin of an array:</p>
 <div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rvar_apply</span>(x, <span class="dv">1</span>, rvar_mean)</span></code></pre></div>
 <pre><code>## rvar&lt;4000&gt;[2] mean ± sd:
 ## [1] 12 ± 0.29  13 ± 0.29</code></pre>
@@ -608,13 +1013,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="using-rvars-in-data-frames-and-in-ggplot2" class="section level2">
 <h2>Using <code>rvar</code>s in data frames and in ggplot2</h2>
-<p><code>rvar</code>s can be used as columns in <code>data.frame()</code> or <code>tibble()</code> objects:</p>
+<p><code>rvar</code>s can be used as columns in
+<code>data.frame()</code> or <code>tibble()</code> objects:</p>
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="st">&quot;a&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;c&quot;</span>), y)</span></code></pre></div>
 <pre><code>##   x                    y
 ## 1 a 2.997187 ± 1.0017769
 ## 2 b 1.983319 ± 0.9998891
 ## 3 c 1.028725 ± 1.0021676</code></pre>
-<p>This makes them convenient for adding predictions to a data frame alongside the data used to generate the predictions. <code>rvar</code>s can then be visualized with ggplot2 using the <code>stat_dist_...</code> family of geometries in the <a href="https://mjskay.github.io/ggdist/">ggdist</a> package.</p>
+<p>This makes them convenient for adding predictions to a data frame
+alongside the data used to generate the predictions. <code>rvar</code>s
+can then be visualized with ggplot2 using the <code>stat_dist_...</code>
+family of geometries in the <a href="https://mjskay.github.io/ggdist/">ggdist</a> package.</p>
 </div>
 
 

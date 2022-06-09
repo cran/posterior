@@ -1,7 +1,7 @@
-0cdac9b0aabae4b4585b7ee8e11cb62e *DESCRIPTION
+aa45b36650e3cdf8250829985c31db85 *DESCRIPTION
 d78f73f281b653a273038ca5aafca6b1 *LICENSE
 311068f9757930877008aae29d7a47e0 *NAMESPACE
-6509bdf1bbd5b9eb8ebb3ecc6c2b6136 *NEWS.md
+7d761d2fa0f05bfa46e75fa8fedf29db *NEWS.md
 e5df055aba3fa4aa1a37c7b1fbc55810 *R/as_draws.R
 27a2d8f1bef99fb8ef2da07d05df7d74 *R/as_draws_array.R
 6b01d5369d6b76872e24bd5a855859cd *R/as_draws_df.R
@@ -9,7 +9,7 @@ e5df055aba3fa4aa1a37c7b1fbc55810 *R/as_draws.R
 1daff272c446b81c63c79e12182fe9c5 *R/as_draws_matrix.R
 edca10f5c118cd0014030c21a8940266 *R/as_draws_rvars.R
 e1fa7d04b0bb1bb604c29edab49eeaa8 *R/bind_draws.R
-228b20d7b7c60a3a3a2d96135fef2590 *R/convergence.R
+21cdb07a5cf92af351e1bd0333ddb886 *R/convergence.R
 ed864e8faf473a5d627a321246dd4a62 *R/draws-index.R
 0bd2a09fa42d0255fa0ac00a903ea1bc *R/example_draws.R
 480e7d7ce751027bf4bf607de8ef2260 *R/extract_variable.R
@@ -50,10 +50,10 @@ b666a398a9ac9cbbbc1085780af42215 *R/thin_draws.R
 75c8005bd2bce25aac58354cc9c39d00 *inst/CITATION
 a0780c250b14b759e75d0524762107f4 *inst/doc/posterior.R
 62e644d3158a905ca00c7572bd3eb13a *inst/doc/posterior.Rmd
-22738de178e4a8743b144b928e3cc7af *inst/doc/posterior.html
+c50fc544e1c137b2343c178ecaf8f175 *inst/doc/posterior.html
 ad31bd2ab6433af45773e40669eede74 *inst/doc/rvar.R
 65952cdf74087fde7b9ac960ff1c0205 *inst/doc/rvar.Rmd
-88cacc133046ead2b150fb8ba3a94c78 *inst/doc/rvar.html
+c378a7ec85169db38aa0f845cac515bd *inst/doc/rvar.html
 9c0cc74f165470774bba7e50be53adfd *man/as_rvar.Rd
 f199d927131cba5a33a9e2cb5678918a *man/autocorrelation.Rd
 e70e7fcf81a3379ecfd94fdc1136743c *man/autocovariance.Rd
@@ -73,7 +73,7 @@ b623b04a58c2094ecaa062d055a25583 *man/draws_rvars.Rd
 a78a5d9225f71bc4c1d403001184bc79 *man/ess_bulk.Rd
 5fff0045cce9169942dcc9789b3bedac *man/ess_mean.Rd
 3447a7def62838d91b8f36ba0dc878a1 *man/ess_quantile.Rd
-8e0fd8ba85216271df37139661f064d3 *man/ess_sd.Rd
+7bd3a0e8b26ae6be6ebead90ad9fae87 *man/ess_sd.Rd
 85bea18eaa2521aee853096f5196b86b *man/ess_tail.Rd
 5f8c867686d494af51ef5dbb3927f174 *man/example_draws.Rd
 3bfd0c884b07574500184a39bc5650db *man/extract_variable.Rd
@@ -82,7 +82,7 @@ cc458a688b314d95962a716cc8d4d929 *man/extract_variable_matrix.Rd
 37a967a63a6808a29be82288e17a2d75 *man/is_rvar.Rd
 d16eea3dfda7202ca4229cc9ac1c27bf *man/mcse_mean.Rd
 765834ac9b27d6391c313dafc4ebf75f *man/mcse_quantile.Rd
-299dccdf594cf3974854d76ae47388e9 *man/mcse_sd.Rd
+8dac08f98599915ee57ce7892ef11130 *man/mcse_sd.Rd
 633b0da5936ab90cff1858f87b971ea0 *man/merge_chains.Rd
 a9b03da9d726679b187fe169fe21ce14 *man/mutate_variables.Rd
 b8b41902400eb943440407ddd3e4d37e *man/order_draws.Rd
@@ -131,7 +131,7 @@ ca03a0526e598dde8ea370a50751e8a6 *tests/testthat/test-draws-index.R
 6ed1ab843e85c2f389d347dd1f2d11ce *tests/testthat/test-extract_variable_matrix.R
 60fddca8118a5946cd812bbf1f131aaf *tests/testthat/test-merge_chains.R
 163d6f15560a25e2f65c00cc8f90f1d2 *tests/testthat/test-mutate_variables.R
-4cdd1c6103ff99886304f66858cab129 *tests/testthat/test-print.R
+f013b34296b1ea48a2f4317589cee718 *tests/testthat/test-print.R
 b6e584381d3f3eb5a339f0486b4d09fe *tests/testthat/test-remove_variables.R
 c53b79a7cf2c04c9a896169a6c3276ae *tests/testthat/test-rename_variables.R
 71070a923f803994e3d2a830ee7f09a2 *tests/testthat/test-repair_draws.R
