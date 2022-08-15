@@ -147,6 +147,27 @@ rvar_apply(x, 1, rvar_mean)
 ## ----rvar_apply_multi_dim-----------------------------------------------------
 rvar_apply(x, c(2,3), rvar_mean)
 
+## ----eight_schools_parcoord, fig.width = 6, fig.height = 4--------------------
+eight_schools <- as_draws_rvars(example_draws())
+
+plot(1, type = "n",
+  xlim = c(1, length(eight_schools$theta)),
+  ylim = range(range(eight_schools$theta)),
+  xlab = "school", ylab = "theta"
+)
+
+# use for_each_draw() to make a parallel coordinates plot of all draws
+# of eight_schools$theta
+for_each_draw(eight_schools, {
+  lines(seq_along(theta), theta, col = rgb(1, 0, 0, 0.05))
+})
+
+# add means and 90% intervals
+lines(seq_along(eight_schools$theta), mean(eight_schools$theta))
+with(summarise_draws(eight_schools$theta), 
+  segments(seq_along(eight_schools$theta), y0 = q5, y1 = q95)
+)
+
 ## ----data_frame_with_y--------------------------------------------------------
 data.frame(x = c("a","b","c"), y)
 

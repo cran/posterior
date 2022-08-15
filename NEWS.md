@@ -1,3 +1,26 @@
+# posterior 1.3.0
+
+### Enhancements
+
+* Implement `for_each_draw(x, expr)`, which executes `expr` once for each draw
+  of `x`, exposing variables in `x` as arrays of the shape implied by the
+  indices in their names (#224).
+* Implement `subset_draws()`, `thin_draws()`, and `resample_draws()` for `rvar`s (#225).
+* Allow `weights` to be optional in `resample_draws()` (#225).
+* Add an implementation of `drop()` for `rvar`s.
+* Speed up subsetting of `draws_list` objects. (#229, #250)
+
+### Bug Fixes
+
+* Support remaining modes of `diag()` for `rvar`s (#246).
+* Better parsing for named indices in `as_draws_rvars()`, including nested use
+of `[`, like `x[y[1],2]` (#243).
+* Allow 0-length `rvar`s with `ndraws() > 1` (#242). 
+* Ensure 0-length `rvar`s can be cast to `draws` formats (#242).
+* Don't treat length-1 `rvar`s with more than 1 dimension as scalars when 
+casting to other formats (#248).
+
+
 # posterior 1.2.2
 
 ### Enhancements

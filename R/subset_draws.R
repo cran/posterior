@@ -159,6 +159,15 @@ subset_draws.draws_rvars <- function(x, variable = NULL, iteration = NULL,
 
 #' @rdname subset_draws
 #' @export
+subset_draws.rvar <- function(x, variable = NULL, ...) {
+  if (!is.null(variable)) {
+    stop_no_call("Cannot subset an rvar by variable.")
+  }
+  subset_draws(draws_rvars(x = x), ...)$x
+}
+
+#' @rdname subset_draws
+#' @export
 subset.draws <- function(x, ...) {
   subset_draws(x, ...)
 }
@@ -318,9 +327,7 @@ subset_dims <- function(x, ...) {
   }
   if (!is.null(iteration)) {
     for (i in seq_along(x)) {
-      for (j in seq_along(x[[i]])) {
-        x[[i]][[j]] <- x[[i]][[j]][iteration]
-      }
+      x[[i]] <- lapply(x[[i]], `[`, iteration)
     }
   }
   x
