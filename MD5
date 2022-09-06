@@ -1,7 +1,7 @@
-578e0ab649c89c6f730f783e2ea2898f *DESCRIPTION
+b991916e7896eeec88ec5a8ad0af75a1 *DESCRIPTION
 d78f73f281b653a273038ca5aafca6b1 *LICENSE
 03a001fe242330192a56fd61ab1143b3 *NAMESPACE
-c6b60b90bdbbed794b4ebd3f0909bc3c *NEWS.md
+09ad0f37110f9bd526616781e2808c0c *NEWS.md
 ebb1fe2f650a1083ddf88aa5746dd947 *R/as_draws.R
 529be2499844cc88f89b812f7da711c5 *R/as_draws_array.R
 6b01d5369d6b76872e24bd5a855859cd *R/as_draws_df.R
@@ -15,7 +15,7 @@ ed864e8faf473a5d627a321246dd4a62 *R/draws-index.R
 480e7d7ce751027bf4bf607de8ef2260 *R/extract_variable.R
 a694a92c4b6bd26c6ac2ab85edf1c4df *R/extract_variable_matrix.R
 dde2ccd55ae3f665420bf74f20b68ce2 *R/for_each_draw.R
-18950feb9f591cf8cad251a2d6af5259 *R/merge_chains.R
+8ef9205fbe50a99c752c9b2b428731d5 *R/merge_chains.R
 19cca5b47767fce243adc092677ef8b4 *R/misc.R
 319f4fa668b8e3dcc8be0a2c78a08ded *R/mutate_variables.R
 267218b53d31819b1b571984f7b583f8 *R/order_draws.R
@@ -51,10 +51,10 @@ bd4c3e9b00905132c0be444202e4b8e4 *R/thin_draws.R
 75c8005bd2bce25aac58354cc9c39d00 *inst/CITATION
 a0780c250b14b759e75d0524762107f4 *inst/doc/posterior.R
 62e644d3158a905ca00c7572bd3eb13a *inst/doc/posterior.Rmd
-d20fb910f956acc0754d7f4f227d2667 *inst/doc/posterior.html
+48e2190cbd762fa4ca98cc742a3cfbf0 *inst/doc/posterior.html
 beb5a3bf0262034403d63088474a5ebf *inst/doc/rvar.R
 4fb66bd5cb551414228048b48483e907 *inst/doc/rvar.Rmd
-75abd7934fb5a6c8b022aa2443afe3c5 *inst/doc/rvar.html
+297c34e0af67120a43f743463f14a91e *inst/doc/rvar.html
 9c0cc74f165470774bba7e50be53adfd *man/as_rvar.Rd
 f199d927131cba5a33a9e2cb5678918a *man/autocorrelation.Rd
 e70e7fcf81a3379ecfd94fdc1136743c *man/autocovariance.Rd
@@ -137,7 +137,7 @@ ca03a0526e598dde8ea370a50751e8a6 *tests/testthat/test-draws-index.R
 06e0b5026e51edeceb138295a06dcfba *tests/testthat/test-for_each_draw.R
 60fddca8118a5946cd812bbf1f131aaf *tests/testthat/test-merge_chains.R
 163d6f15560a25e2f65c00cc8f90f1d2 *tests/testthat/test-mutate_variables.R
-f013b34296b1ea48a2f4317589cee718 *tests/testthat/test-print.R
+3c9a3315b3a8614891727d74febeb488 *tests/testthat/test-print.R
 b6e584381d3f3eb5a339f0486b4d09fe *tests/testthat/test-remove_variables.R
 c53b79a7cf2c04c9a896169a6c3276ae *tests/testthat/test-rename_variables.R
 71070a923f803994e3d2a830ee7f09a2 *tests/testthat/test-repair_draws.R
