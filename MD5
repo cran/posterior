@@ -1,7 +1,7 @@
-d389b9a28c970f7149d3f2c1c4c0cb54 *DESCRIPTION
+90ccb80379168e9f62f07d4fd7fa37e8 *DESCRIPTION
 d78f73f281b653a273038ca5aafca6b1 *LICENSE
-28a93408f293824e448c7e73cbc1feb6 *NAMESPACE
-be5d03d45d099699542a7a5f9fb72369 *NEWS.md
+4db64e7cf7b818bfdee51ed700b6dada *NAMESPACE
+a9b33d470b44a5d163301b85082907ab *NEWS.md
 60d9268ad7286c2e883fdfd3b5b885fe *R/as_draws.R
 bd0f940893318290c32ca096580fe14d *R/as_draws_array.R
 cc3f2f1843b73d490bdb5f3368780fd5 *R/as_draws_df.R
@@ -28,7 +28,7 @@ b2eedd92e8592e6b09e5d05f37313eef *R/repair_draws.R
 e063bb2befdd80cd4c866d136ac89941 *R/resample_draws.R
 059f09b8582a7f2053690ca2e0121f7d *R/reserved_variables.R
 586b46defe9d67cb6f169b0ff46a0904 *R/rstar.R
-2320b2d8b00f4f39f057edd37fb02041 *R/rvar-.R
+c316c0eb6be0cd0638129264261014f7 *R/rvar-.R
 d785337c65e6d514807472bce9ceda07 *R/rvar-apply.R
 a622486e351ecbde2304d644155e8a9d *R/rvar-bind.R
 50ae1f0ba01ff0ec557e3f5302eb3eb5 *R/rvar-cast.R
@@ -43,7 +43,7 @@ be61f5d935921782d2cd0b2664848e5c *R/rvar-print.R
 bc4df3fd54bbf34b39cdfb7b8e479c5a *R/rvar-summaries-within-draws.R
 84e04a8b127afd8bb5b9350c234c32c0 *R/split_chains.R
 07656e92d3c2291994ca105fa532e652 *R/subset_draws.R
-8c19bedee598c06ebeab64247b3ec112 *R/summarise_draws.R
+413d1020e352fcf2c3087a5cb2667cb6 *R/summarise_draws.R
 0db59654b1d67cb05db34baf849503e9 *R/sysdata.rda
 bd4c3e9b00905132c0be444202e4b8e4 *R/thin_draws.R
 90b84a945d9d27d8b994261e39178507 *R/weight_draws.R
@@ -54,10 +54,10 @@ fa530832296072ade1bb6809c454b84c *build/vignette.rds
 75c8005bd2bce25aac58354cc9c39d00 *inst/CITATION
 a0780c250b14b759e75d0524762107f4 *inst/doc/posterior.R
 62e644d3158a905ca00c7572bd3eb13a *inst/doc/posterior.Rmd
-fd914bc48e914e17b176f1a0d586ce2b *inst/doc/posterior.html
+6f33687e5c14168f310315ab2111d097 *inst/doc/posterior.html
 8fe29e9db3494e0c3e374c709224916f *inst/doc/rvar.R
 18f1d2f73c19e53dea592f0479a6c08e *inst/doc/rvar.Rmd
-f59da3905ea6dbbdd49809545c021cf6 *inst/doc/rvar.html
+04cd86be8bd7de05f2a3f366bd8a8bf1 *inst/doc/rvar.html
 fba4e200b1f11ad54c4520f814d38db6 *man/as_rvar.Rd
 a08739ada25ef4cc68091474403ed322 *man/as_rvar_factor.Rd
 f199d927131cba5a33a9e2cb5678918a *man/autocorrelation.Rd
@@ -106,6 +106,7 @@ ec780ea3f9ee87a1aeab588b118616a1 *man/posterior-package.Rd
 a69d82f6dbda5366ad6f7857d408b6fd *man/print.draws_list.Rd
 e754372458bf27001f764ee0aca7b624 *man/print.draws_matrix.Rd
 a790f5416b8c2a009b7f4013037d95af *man/print.draws_rvars.Rd
+a6c4bb35cbe44a15422033b7421a62d8 *man/print.draws_summary.Rd
 8e363deaa89245ed4ea2d041cdfc85f9 *man/print.rvar.Rd
 8b746ae7610a4676c78021cf857f8208 *man/quantile2.Rd
 d94b8e5cc67c4695666c9eb5689f7551 *man/r_scale.Rd
@@ -168,7 +169,7 @@ fa431041eb511e8a555cb04d4c1604a4 *tests/testthat/test-rvar-print.R
 7fc8127276968232f4c47d8b64065c35 *tests/testthat/test-rvar-summaries-over-draws.R
 1393977088fad3e9d989062cb5e12ab2 *tests/testthat/test-rvar-summaries-within-draws.R
 0cfa129a53223ac3eda7e26863c57470 *tests/testthat/test-subset_draws.R
-0806d2b70d29d377155abdf8160e8ef8 *tests/testthat/test-summarise_draws.R
+6e9a0e46e2e98405e8b561b1692ca095 *tests/testthat/test-summarise_draws.R
 bccbb7f6a705ecbb0c8e69528f314e32 *tests/testthat/test-thin_draws.R
 a760764596d03cfd36f52f75d1e63422 *tests/testthat/test-variables.R
 ca4692417fb152ad1aead6feabc9692b *tests/testthat/test-weight_draws.R
