@@ -146,6 +146,32 @@ row_y
 ## ----X_plus_row_y-------------------------------------------------------------
 X + row_y
 
+## -----------------------------------------------------------------------------
+component = rvar_rng(rnorm, 2, mean = c(1, 5))
+component
+
+## -----------------------------------------------------------------------------
+i = rvar_rng(rbinom, 1, size = 1, p = 0.75) + 1L
+i
+
+## -----------------------------------------------------------------------------
+mixture = component[[1]]
+mixture[i == 2] = component[[2]][i == 2]
+mixture
+
+## ----mixture, eval = requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggdist", quietly = TRUE)----
+library(ggplot2)
+
+ggplot() + ggdist::stat_slab(aes(xdist = mixture))
+
+## -----------------------------------------------------------------------------
+x = rvar_ifelse(i == 1, component[[1]], component[[2]])
+x
+
+## -----------------------------------------------------------------------------
+x = component[[i]]
+x
+
 ## ----multidim_array-----------------------------------------------------------
 set.seed(3456)
 x <- rvar_rng(rnorm, 24, mean = 1:24)
@@ -183,5 +209,13 @@ with(summarise_draws(eight_schools$theta),
 )
 
 ## ----data_frame_with_y--------------------------------------------------------
-data.frame(x = c("a","b","c"), y)
+df <- data.frame(group = c("a","b","c","d"), mu)
+df
+
+## ----data_frame_plot, eval = requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("ggdist", quietly = TRUE)----
+library(ggplot2)
+library(ggdist)
+
+ggplot(df) +
+  stat_halfeye(aes(y = group, xdist = mu))
 

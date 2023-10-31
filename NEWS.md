@@ -1,3 +1,30 @@
+# posterior 1.5.0
+
+### Enhancements
+
+* Added support for nested-Rhat via `rhat_nested` (#256)
+* Added support for indexing draws in `rvar`s using `rvar`s (#282):
+  * `x[i]` or `x[i] <- y` where `i` is a scalar logical `rvar` slices (or
+    updates) `x` by its draws. Thus, if `y <- x[i]`, then `y` is the same
+    shape as `x` but with `sum(i)` draws.
+  * `x[[i]]` or `x[[i]] <- y` where `i` is a scalar numeric rvar slices (or
+    updates) `x` by selecting the `i`th element within each corresponding draw.
+    Thus, if `y <- x[[i]]`, then `y` is an `rvar` of length 1.
+* Added `rvar_ifelse()`, which is a variant of `ifelse()` that accepts (and
+  returns) `rvar`s (#282).
+* Array broadcasting for `rvar`s has been made faster.
+
+### Bug Fixes
+
+* Ensure `rfun()` works with primitive functions (#290) and dots arguments (#291).
+* Provide implementations of `vctrs::vec_proxy_equal()`, 
+`vctrs::vec_proxy_compare()`, and `vctrs::vec_proxy_order()`.
+* Minor future-proofing of `cbind(<rvar>)`, `rbind(<rvar>)`, and `chol(<rvar>)`
+  for R 4.4 (#304).
+* Ensure that `bind_draws(<draws_rvars>)` regenerates draw ids when binding along
+  chains or draws; this also fixes a bug in `split_chains(<draws_rvars>)` (#300).
+
+
 # posterior 1.4.1
 
 ### Bug Fixes

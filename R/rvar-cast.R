@@ -17,9 +17,10 @@
 #' is useful for creating constants.
 #'
 #' While `as_rvar()` attempts to pick the most suitable subtype of [`rvar`] based on the
-#' type of `x` (possibly returning a an [`rvar_factor`] or [`rvar_ordered`]),
-#' `as_rvar_numeric()` always coerces the draws of the output [`rvar`] to be [`numeric`],
-#' and always returns a base [`rvar`], never a subtype.
+#' type of `x` (possibly returning an [`rvar_factor`] or [`rvar_ordered`]),
+#' `as_rvar_numeric()`, `as_rvar_integer()`, and `as_rvar_logical()` always coerce
+#' the draws of the output [`rvar`] to be [`numeric`], [`integer`], or [`logical`]
+#' (respectively), and always return a base [`rvar`], never a subtype.
 #'
 #' @seealso [rvar()] to construct [`rvar`]s directly.  See [rdo()], [rfun()], and
 #' [rvar_rng()] for higher-level interfaces for creating `rvar`s.
@@ -83,6 +84,22 @@ as_rvar <- function(x, dim = NULL, dimnames = NULL, nchains = NULL) {
 as_rvar_numeric <- function(x, dim = NULL, dimnames = NULL, nchains = NULL) {
   out <- as_rvar(x, dim = dim, dimnames = dimnames, nchains = nchains)
   draws_of(out) <- while_preserving_dims(as.numeric, draws_of(out))
+  out
+}
+
+#' @rdname as_rvar
+#' @export
+as_rvar_integer <- function(x, dim = NULL, dimnames = NULL, nchains = NULL) {
+  out <- as_rvar(x, dim = dim, dimnames = dimnames, nchains = nchains)
+  draws_of(out) <- while_preserving_dims(as.integer, draws_of(out))
+  out
+}
+
+#' @rdname as_rvar
+#' @export
+as_rvar_logical <- function(x, dim = NULL, dimnames = NULL, nchains = NULL) {
+  out <- as_rvar(x, dim = dim, dimnames = dimnames, nchains = nchains)
+  draws_of(out) <- while_preserving_dims(as.logical, draws_of(out))
   out
 }
 
@@ -275,6 +292,46 @@ vec_restore.rvar_factor = function(x, to, ...) {
 vec_restore.rvar_ordered = function(x, to, ...) {
   x[lengths(x) == 0] <- make_rvar_proxy(rvar_ordered(NA_integer_))
   vec_restore.rvar(x, ...)
+}
+
+
+# vctrs comparison proxies ------------------------------------------------
+
+#' @importFrom vctrs vec_proxy_equal
+#' @export
+vec_proxy_equal.rvar = function(x, ...) {
+  # Using caching to help with algorithms that call vec_proxy_equal
+  # repeatedly. See https://github.com/r-lib/vctrs/issues/1411
+
+  out <- attr(x, "cache")$vec_proxy_equal
+  if (is.null(out)) {
+    # proxy is not in the cache, calculate it and store it in the cache
+    out <- make_rvar_proxy_equal(x)
+    attr(x, "cache")$vec_proxy_equal <- out
+  }
+
+  out
+}
+
+#' Make a cacheable proxy for vec_proxy_equal.rvar
+#' @noRd
+make_rvar_proxy_equal = function(x) {
+  lapply(as.list(x), function(x) list(
+    nchains = nchains(x),
+    draws = draws_of(x)
+  ))
+}
+
+#' @importFrom vctrs vec_proxy_compare
+#' @export
+vec_proxy_compare.rvar = function(x, ...) {
+  stop_no_call("rvar does not support vctrs::vec_compare()")
+}
+
+#' @importFrom vctrs vec_proxy_order
+#' @export
+vec_proxy_order.rvar = function(x, ...) {
+  stop_no_call("rvar does not support vctrs::vec_order()")
 }
 
 
