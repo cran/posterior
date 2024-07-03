@@ -4,6 +4,15 @@
 \alias{pareto_diags}
 \alias{pareto_diags.default}
 \alias{pareto_diags.rvar}
+\alias{pareto_khat_threshold}
+\alias{pareto_khat_threshold.default}
+\alias{pareto_khat_threshold.rvar}
+\alias{pareto_min_ss}
+\alias{pareto_min_ss.default}
+\alias{pareto_min_ss.rvar}
+\alias{pareto_convergence_rate}
+\alias{pareto_convergence_rate.default}
+\alias{pareto_convergence_rate.rvar}
 \title{Pareto smoothing diagnostics}
 \usage{
 pareto_diags(x, ...)
@@ -14,10 +23,29 @@ pareto_diags(x, ...)
   r_eff = NULL,
   ndraws_tail = NULL,
   verbose = FALSE,
+  are_log_weights = FALSE,
   ...
 )
 
 \method{pareto_diags}{rvar}(x, ...)
+
+pareto_khat_threshold(x, ...)
+
+\method{pareto_khat_threshold}{default}(x, ...)
+
+\method{pareto_khat_threshold}{rvar}(x, ...)
+
+pareto_min_ss(x, ...)
+
+\method{pareto_min_ss}{default}(x, ...)
+
+\method{pareto_min_ss}{rvar}(x, ...)
+
+pareto_convergence_rate(x, ...)
+
+\method{pareto_convergence_rate}{default}(x, ...)
+
+\method{pareto_convergence_rate}{rvar}(x, ...)
 }
 \arguments{
 \item{x}{(multiple options) One of:
@@ -39,17 +67,22 @@ pareto_diags(x, ...)
 The default is \code{"both"}.}
 
 \item{r_eff}{(numeric) relative effective sample size estimate. If
-\code{r_eff} is omitted, it will be calculated assuming the draws are
-from MCMC.}
+\code{r_eff} is NULL, it will be calculated assuming the draws are
+from MCMC. Default is NULL.}
 
 \item{ndraws_tail}{(numeric) number of draws for the tail. If
 \code{ndraws_tail} is not specified, it will be calculated as
 ceiling(3 * sqrt(length(x) / r_eff)) if length(x) > 225 and
-length(x) / 5 otherwise (see Appendix H in Vehtari et al. (2022)).}
+length(x) / 5 otherwise (see Appendix H in Vehtari et
+al. (2024)).}
 
 \item{verbose}{(logical) Should diagnostic messages be printed? If
 \code{TRUE}, messages related to Pareto diagnostics will be
 printed. Default is \code{FALSE}.}
+
+\item{are_log_weights}{(logical) Are the draws log weights? Default is
+\code{FALSE}. If \code{TRUE} computation will take into account that the
+draws are log weights, and only right tail will be smoothed.}
 }
 \value{
 List of Pareto smoothing diagnostics:
@@ -76,19 +109,19 @@ estimate. If the actual sample size is greater than \code{min_ss}, then
 Pareto smoothed estimates can be considered reliable. If the actual
 sample size is lower than \code{min_ss}, increasing the sample size
 might result in more reliable estimates. For further details, see
-Section 3.2.3, Equation 11 in Vehtari et al. (2022).
+Section 3.2.3, Equation 11 in Vehtari et al. (2024).
 \item \code{khat_threshold}: Threshold below which k-hat values result in
 reliable Pareto smoothed estimates. The threshold is lower for
 smaller effective sample sizes. If k-hat is larger than the
 threshold, increasing the total sample size may improve reliability
 of estimates. For further details, see Section 3.2.4, Equation 13
-in Vehtari et al. (2022).
+in Vehtari et al. (2024).
 \item \code{convergence_rate}: Relative convergence rate compared to the
 central limit theorem. Applicable only if the actual sample size
 is sufficiently large (greater than \code{min_ss}). The convergence
 rate tells the rate at which the variance of an estimate reduces
 when the sample size is increased, compared to the central limit
-theorem convergence rate. See Appendix B in Vehtari et al. (2022).
+theorem convergence rate. See Appendix B in Vehtari et al. (2024).
 }
 }
 \examples{
@@ -100,6 +133,29 @@ pareto_diags(d$Sigma)
 }
 \references{
 Aki Vehtari, Daniel Simpson, Andrew Gelman, Yuling Yao and
-Jonah Gabry (2022). Pareto Smoothed Importance Sampling.
-arxiv:arXiv:1507.02646
+Jonah Gabry (2024). Pareto Smoothed Importance Sampling.
+\emph{Journal of Machine Learning Research}, 25(72):1-58.
+\href{https://jmlr.org/papers/v25/19-556.html}{PDF}
 }
+\seealso{
+\code{\link{pareto_khat}}, \code{\link{pareto_min_ss}},
+\code{\link{pareto_khat_threshold}}, and \code{\link{pareto_convergence_rate}} for
+individual diagnostics; and \code{\link{pareto_smooth}} for Pareto smoothing
+draws.
+
+Other diagnostics: 
+\code{\link{ess_basic}()},
+\code{\link{ess_bulk}()},
+\code{\link{ess_quantile}()},
+\code{\link{ess_sd}()},
+\code{\link{ess_tail}()},
+\code{\link{mcse_mean}()},
+\code{\link{mcse_quantile}()},
+\code{\link{mcse_sd}()},
+\code{\link{pareto_khat}()},
+\code{\link{rhat}()},
+\code{\link{rhat_basic}()},
+\code{\link{rhat_nested}()},
+\code{\link{rstar}()}
+}
+\concept{diagnostics}

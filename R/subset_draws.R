@@ -3,19 +3,28 @@
 #' Subset [`draws`] objects by variables, iterations, chains, and draws indices.
 #'
 #' @template args-methods-x
-#' @param variable (character vector) The variables to select. All elements of
-#'   non-scalar variables can be selected at once.
+#' @param variable (character vector) The variables to select. All
+#'   elements of non-scalar variables can be selected at once.
 #' @param iteration (integer vector) The iteration indices to select.
 #' @param chain (integer vector) The chain indices to select.
-#' @param draw (integer vector) The draw indices to be select. Subsetting draw
-#'   indices will lead to an automatic merging of chains via [`merge_chains`].
+#' @param draw (integer vector) The draw indices to be
+#'   select. Subsetting draw indices will lead to an automatic merging
+#'   of chains via [`merge_chains`].
 #' @param regex (logical) Should `variable` should be treated as a
-#'   (vector of) regular expressions? Any variable in `x` matching at least one
-#'   of the regular expressions will be selected. Defaults to `FALSE`.
-#' @param unique (logical) Should duplicated selection of chains, iterations, or
-#'   draws be allowed? If `TRUE` (the default) only unique chains, iterations,
-#'   and draws are selected regardless of how often they appear in the
-#'   respective selecting arguments.
+#'   (vector of) regular expressions? Any variable in `x` matching at
+#'   least one of the regular expressions will be selected. Defaults
+#'   to `FALSE`.
+#' @param unique (logical) Should duplicated selection of chains,
+#'   iterations, or draws be allowed? If `TRUE` (the default) only
+#'   unique chains, iterations, and draws are selected regardless of
+#'   how often they appear in the respective selecting arguments.
+#' @param exclude (logical) Should the selected subset be excluded?
+#'   If `FALSE` (the default) only the selected subset will be
+#'   returned.  If `TRUE` everything but the selected subset will be
+#'   returned.
+#' @param scalar (logical) Should only scalar variables be selected?
+#'   If `FALSE` (the default), all variables with matching names and
+#'   *arbitrary* indices will be selected (see examples).
 #'
 #' @template args-methods-dots
 #' @template return-draws
@@ -37,6 +46,9 @@
 #' # extract all elements of 'theta'
 #' subset_draws(x, variable = "theta")
 #'
+#' # trying to extract only a scalar 'theta' will fail
+#' # subset_draws(x, variable = "theta", scalar = TRUE)
+#'
 #' @export
 subset_draws <- function(x, ...) {
   UseMethod("subset_draws")
@@ -46,15 +58,20 @@ subset_draws <- function(x, ...) {
 #' @export
 subset_draws.draws_matrix <- function(x, variable = NULL, iteration = NULL,
                                       chain = NULL, draw = NULL, regex = FALSE,
-                                      unique = TRUE, ...) {
+                                      unique = TRUE, exclude = FALSE,
+                                      scalar = FALSE, ...) {
   if (all_null(variable, iteration, chain, draw)) {
     return(x)
   }
   x <- repair_draws(x)
-  variable <- check_existing_variables(variable, x, regex = regex)
-  iteration <- check_iteration_ids(iteration, x, unique = unique)
-  chain <- check_chain_ids(chain, x, unique = unique)
-  draw <- check_draw_ids(draw, x, unique = unique)
+  variable <- check_existing_variables(
+    variable, x, regex = regex, exclude = exclude,
+    scalar = scalar
+  )
+  iteration <- check_iteration_ids(iteration, x, unique = unique, exclude = exclude)
+  chain <- check_chain_ids(chain, x, unique = unique, exclude = exclude)
+  draw <- check_draw_ids(draw, x, unique = unique, exclude = exclude)
+
   x <- prepare_subsetting(x, iteration, chain, draw)
   x <- .subset_draws(x, iteration, chain, draw, variable, reserved = TRUE)
   if (!is.null(chain) || !is.null(iteration)) {
@@ -67,15 +84,21 @@ subset_draws.draws_matrix <- function(x, variable = NULL, iteration = NULL,
 #' @export
 subset_draws.draws_array <- function(x, variable = NULL, iteration = NULL,
                                      chain = NULL, draw = NULL, regex = FALSE,
-                                     unique = TRUE, ...) {
+                                     unique = TRUE, exclude = FALSE,
+                                     scalar = FALSE, ...) {
   if (all_null(variable, iteration, chain, draw)) {
     return(x)
   }
+
   x <- repair_draws(x)
-  variable <- check_existing_variables(variable, x, regex = regex)
-  iteration <- check_iteration_ids(iteration, x, unique = unique)
-  chain <- check_chain_ids(chain, x, unique = unique)
-  draw <- check_draw_ids(draw, x, unique = unique)
+  variable <- check_existing_variables(
+    variable, x, regex = regex, exclude = exclude,
+    scalar = scalar
+  )
+  iteration <- check_iteration_ids(iteration, x, unique = unique, exclude = exclude)
+  chain <- check_chain_ids(chain, x, unique = unique, exclude = exclude)
+  draw <- check_draw_ids(draw, x, unique = unique, exclude = exclude)
+
   x <- prepare_subsetting(x, iteration, chain, draw)
   if (!is.null(draw)) {
     iteration <- draw
@@ -91,16 +114,22 @@ subset_draws.draws_array <- function(x, variable = NULL, iteration = NULL,
 #' @export
 subset_draws.draws_df <- function(x, variable = NULL, iteration = NULL,
                                   chain = NULL, draw = NULL, regex = FALSE,
-                                  unique = TRUE, ...) {
+                                  unique = TRUE, exclude = FALSE,
+                                  scalar = FALSE, ...) {
   if (all_null(variable, iteration, chain, draw)) {
     return(x)
   }
+
   x <- repair_draws(x)
   unique <- as_one_logical(unique)
-  variable <- check_existing_variables(variable, x, regex = regex)
-  iteration <- check_iteration_ids(iteration, x, unique = unique)
-  chain <- check_chain_ids(chain, x, unique = unique)
-  draw <- check_draw_ids(draw, x, unique = unique)
+  variable <- check_existing_variables(
+    variable, x, regex = regex, exclude = exclude,
+    scalar = scalar
+  )
+  iteration <- check_iteration_ids(iteration, x, unique = unique, exclude = exclude)
+  chain <- check_chain_ids(chain, x, unique = unique, exclude = exclude)
+  draw <- check_draw_ids(draw, x, unique = unique, exclude = exclude)
+
   x <- prepare_subsetting(x, iteration, chain, draw)
   x <- .subset_draws(
     x, iteration, chain, draw, variable,
@@ -113,15 +142,21 @@ subset_draws.draws_df <- function(x, variable = NULL, iteration = NULL,
 #' @export
 subset_draws.draws_list <- function(x, variable = NULL, iteration = NULL,
                                     chain = NULL, draw = NULL, regex = FALSE,
-                                    unique = TRUE, ...) {
+                                    unique = TRUE, exclude = FALSE,
+                                    scalar = FALSE, ...) {
   if (all_null(variable, iteration, chain, draw)) {
     return(x)
   }
+
   x <- repair_draws(x)
-  variable <- check_existing_variables(variable, x, regex = regex)
-  iteration <- check_iteration_ids(iteration, x, unique = unique)
-  chain <- check_chain_ids(chain, x, unique = unique)
-  draw <- check_draw_ids(draw, x, unique = unique)
+  variable <- check_existing_variables(
+    variable, x, regex = regex, exclude = exclude,
+    scalar = scalar
+  )
+  iteration <- check_iteration_ids(iteration, x, unique = unique, exclude = exclude)
+  chain <- check_chain_ids(chain, x, unique = unique, exclude = exclude)
+  draw <- check_draw_ids(draw, x, unique = unique, exclude = exclude)
+
   x <- prepare_subsetting(x, iteration, chain, draw)
   if (!is.null(draw)) {
     iteration <- draw
@@ -137,15 +172,21 @@ subset_draws.draws_list <- function(x, variable = NULL, iteration = NULL,
 #' @export
 subset_draws.draws_rvars <- function(x, variable = NULL, iteration = NULL,
                                      chain = NULL, draw = NULL, regex = FALSE,
-                                     unique = TRUE, ...) {
+                                     unique = TRUE, exclude = FALSE,
+                                     scalar = FALSE, ...) {
   if (all_null(variable, iteration, chain, draw)) {
     return(x)
   }
+
   x <- repair_draws(x)
-  variable <- check_existing_variables(variable, x, regex = regex)
-  iteration <- check_iteration_ids(iteration, x, unique = unique)
-  chain <- check_chain_ids(chain, x, unique = unique)
-  draw <- check_draw_ids(draw, x, unique = unique)
+  variable <- check_existing_variables(
+    variable, x, regex = regex, exclude = exclude,
+    scalar = scalar
+  )
+  iteration <- check_iteration_ids(iteration, x, unique = unique, exclude = exclude)
+  chain <- check_chain_ids(chain, x, unique = unique, exclude = exclude)
+  draw <- check_draw_ids(draw, x, unique = unique, exclude = exclude)
+
   x <- prepare_subsetting(x, iteration, chain, draw)
   if (!is.null(draw)) {
     iteration <- draw
