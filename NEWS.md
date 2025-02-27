@@ -1,3 +1,14 @@
+# posterior 1.6.1
+
+### Bug Fixes
+
+* Fix a test issue that led to an R CMD check failure on R devel.
+
+### Enhancements
+
+* Convert lists of matrices to `draws_array` objects.
+* Improve the documentation in various places.
+
 # posterior 1.6.0
 
 ### Enhancements
