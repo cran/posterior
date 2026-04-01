@@ -7,7 +7,7 @@
 \title{Tools for working with posterior (and prior) distributions}
 \description{
 \if{html}{
-   \figure{stanlogo.png}{options: width="50"}
+   \figure{logo.svg}{options: width="50"}
    \url{https://mc-stan.org/posterior/}
 }
 
@@ -87,7 +87,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Jonah Gabry \email{jsg2201@columbia.edu}
+  \item Jonah Gabry \email{jgabry@gmail.com}
   \item Matthew Kay \email{mjskay@northwestern.edu}
   \item Aki Vehtari \email{Aki.Vehtari@aalto.fi}
 }
@@ -100,6 +100,7 @@ Other contributors:
   \item Ozan Adıgüzel [contributor]
   \item Jacob Socolar [contributor]
   \item Noa Kallioinen [contributor]
+  \item Teemu Säilynoja [contributor]
 }
 
 }

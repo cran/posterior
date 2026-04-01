@@ -1,9 +1,9 @@
 ## ----install, eval=FALSE------------------------------------------------------
-#  install.packages("posterior")
+# install.packages("posterior")
 
 ## ----install_github, eval=FALSE-----------------------------------------------
-#  # install.packages("remotes")
-#  remotes::install_github("stan-dev/posterior")
+# # install.packages("remotes")
+# remotes::install_github("stan-dev/posterior")
 
 ## ----setup--------------------------------------------------------------------
 library("posterior")
@@ -97,11 +97,11 @@ summarise_draws(
 )
 
 ## ----standard-quantile, eval = FALSE------------------------------------------
-#  function(x) quantile(x, probs = c(0.4, 0.6))
+# function(x) quantile(x, probs = c(0.4, 0.6))
 
 ## ----lambda-quantile, eval = FALSE--------------------------------------------
-#  # for multiple arguments `.x` and `.y` can be used, see ?rlang::as_function
-#  ~quantile(., probs = c(0.4, 0.6))
+# # for multiple arguments `.x` and `.y` can be used, see ?rlang::as_function
+# ~quantile(., probs = c(0.4, 0.6))
 
 ## ----lambda-syntax------------------------------------------------------------
 summarise_draws(eight_schools_df, function(x) quantile(x, probs = c(0.4, 0.6)))

@@ -58,7 +58,9 @@ drop_dims_or_classes <- function(x, dims = NULL, reset_class = FALSE) {
 }
 
 '%||%' <- function(x, y) {
-  if (is.null(x)) x <- y
+  if (is.null(x)) {
+    x <- y
+  }
   x
 }
 
@@ -180,6 +182,16 @@ isNA <- function(x) {
   length(x) == 1L && is.na(x)
 }
 
+#' Check if vector is constant
+#'
+#' check if a vector is constant, up to a defined tolerance.
+#'
+#' @param x (vector) vector to check if is constant
+#' @param tol (numeric) tolerance to consider two values equal.
+#'   Default is `.Machine$double.eps`.
+#'
+#' @keywords internal
+#' @export
 is_constant <- function(x, tol = .Machine$double.eps) {
   abs(max(x) - min(x)) < tol
 }
@@ -209,9 +221,16 @@ escape_all <- function(x) {
 
 # numerically stable version of log(sum(exp(x)))
 log_sum_exp <- function(x) {
-  max <- max(x)
-  sum <- sum(exp(x - max))
-  max + log(sum)
+  max <- max(as.numeric(x), warnings = FALSE)
+  if (max == -Inf) {
+    res <- 0
+  } else if (max == Inf) {
+    res <- Inf
+  } else {
+    sum <- sum(exp(x - max))
+    res <- max + log(sum)
+  }
+  res
 }
 
 # simple version of destructuring assignment
@@ -238,4 +257,3 @@ has_s3_method <- function(f, signature) {
   }
   FALSE
 }
-

@@ -13,6 +13,19 @@ test_that("pareto_khat handles constant tail correctly", {
 })
 
 
+test_that("pareto_smooth handles non-constant x with constant tail", {
+
+  # x is non-constant but the right tail is constant
+  x <- c(seq(-3, 3, length.out = 90), rep(5, 10))
+
+  expect_no_error(
+    ps <- pareto_smooth(x, tail = "right", ndraws_tail = 10, return_k = TRUE, verbose = FALSE)
+  )
+  expect_true(is.na(ps$diagnostics$khat))
+  expect_equal(ps$x, x)
+
+})
+
 test_that("pareto_khat handles tail argument", {
 
   # as tau is bounded (0, Inf) the left pareto k should be lower than
@@ -39,7 +52,19 @@ test_that("pareto_khat handles ndraws_tail argument", {
 
   expect_warning(pareto_khat(tau, tail = "both", ndraws_tail = 4),
                  "Number of tail draws cannot be less than 5. Changing to 5.")
-
+  
+  expect_warning(pareto_khat(tau, tail = "right", ndraws_tail = 4),
+                 "Number of tail draws cannot be less than 5. Changing to 5.")
+  
+  expect_warning(pareto_khat(tau, tail = "left", ndraws_tail = 4),
+                 "Number of tail draws cannot be less than 5. Changing to 5.")
+  
+  expect_warning(pareto_khat(tau, tail = "right", ndraws_tail = length(tau)),
+                 "Tail draws (400) not strictly less than total draws (400). Fitting of generalized Pareto distribution not performed.",
+                 fixed = TRUE)
+    expect_warning(pareto_khat(tau, tail = "right", ndraws_tail = 2 * length(tau)),
+                 "Tail draws (800) not strictly less than total draws (400). Fitting of generalized Pareto distribution not performed.",
+                 fixed = TRUE)
 })
 
 
@@ -222,4 +247,38 @@ test_that("pareto_smooth works for log_weights", {
 
   expect_true(ps$diagnostics$khat > 0.7)
 
+})
+
+test_that("check ps_tail behavior for ndraws_tail less than 5", {
+  w <- c(1:25, 1e3, 1e3, 1e3)
+  lw <- log(w)
+
+  # prints correct warning
+  expect_warning(
+    tail <- ps_tail(lw, ndraws_tail = 4, tail = "right"),
+    "Can't fit generalized Pareto distribution because ndraws_tail is less than 5."
+  )
+  # output has expected shape and k = NA
+  expect_equal(names(tail), c("x", "k"))
+  expect_true(is.na(tail$k))
+})
+
+test_that("check ps_tail behavior for constant draws_tail", {
+  x <- log(replicate(10, 0.3))
+
+  tail <- ps_tail(x, ndraws_tail = 10, tail = "left")
+
+  # output has expected return values
+  expect_equal(x, tail$x)
+  expect_true(is.na(tail$k))
+})
+
+
+test_that("check ps_min_ss behavior special cases", {
+  # k = NA
+  expect_true(is.na(ps_min_ss(NA)))
+  # k > 1
+  expect_true(is.infinite(ps_min_ss(2)))
+  # k < 1
+  expect_equal(ps_min_ss(0.5), 10^(1 / (1 - max(0, 0.5))))
 })

@@ -1,9 +1,9 @@
 Package: posterior
 Title: Tools for Working with Posterior Distributions
-Version: 1.6.1
-Date: 2025-02-27
+Version: 1.7.0
+Date: 2026-04-01
 Authors@R: c(person("Paul-Christian", "Bürkner", email = "paul.buerkner@gmail.com", role = c("aut", "cre")),
-             person("Jonah", "Gabry", email = "jsg2201@columbia.edu", role = c("aut")),
+             person("Jonah", "Gabry", email = "jgabry@gmail.com", role = c("aut")),
              person("Matthew", "Kay", email = "mjskay@northwestern.edu", role = c("aut")),
              person("Aki", "Vehtari", email = "Aki.Vehtari@aalto.fi", role = c("aut")),
              person("Måns", "Magnusson", role = c("ctb")),
@@ -11,9 +11,10 @@ Authors@R: c(person("Paul-Christian", "Bürkner", email = "paul.buerkner@gmail.c
              person("Ben", "Lambert", role = c("ctb")),
              person("Ozan", "Adıgüzel", role = c("ctb")), 
              person("Jacob", "Socolar", role = c("ctb")),
-             person("Noa", "Kallioinen", role = c("ctb")))
+             person("Noa", "Kallioinen", role = c("ctb")),
+             person("Teemu", "Säilynoja", role = c("ctb")))
 Description: Provides useful tools for both users and developers of packages 
-  for fitting Bayesian models or working with output from Bayesian models. 
+  for fitting Bayesian models or working with output from Bayesian models.
   The primary goals of the package are to: 
   (a) Efficiently convert between many different useful formats of
   draws (samples) from posterior or prior distributions.
@@ -30,14 +31,15 @@ Imports: methods, abind, checkmate, rlang (>= 1.0.6), stats, tibble (>=
 Suggests: testthat (>= 2.1.0), caret (>= 6.0-84), gbm (>= 2.1.8),
         randomForest (>= 4.6.14), e1071 (>= 1.7-3), dplyr, tidyr,
         knitr, ggplot2, ggdist, rmarkdown
+Config/Needs/website: stan-dev/pkgdown-config
 License: BSD_3_clause + file LICENSE
 Encoding: UTF-8
 URL: https://mc-stan.org/posterior/, https://discourse.mc-stan.org/
 BugReports: https://github.com/stan-dev/posterior/issues
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2025-02-27 13:23:52 UTC; paul-buerkner
+Packaged: 2026-04-01 11:52:27 UTC; wa.bocktif1
 Author: Paul-Christian Bürkner [aut, cre],
   Jonah Gabry [aut],
   Matthew Kay [aut],
@@ -47,7 +49,8 @@ Author: Paul-Christian Bürkner [aut, cre],
   Ben Lambert [ctb],
   Ozan Adıgüzel [ctb],
   Jacob Socolar [ctb],
-  Noa Kallioinen [ctb]
+  Noa Kallioinen [ctb],
+  Teemu Säilynoja [ctb]
 Maintainer: Paul-Christian Bürkner <paul.buerkner@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-02-27 14:30:02 UTC
+Date/Publication: 2026-04-01 13:00:02 UTC

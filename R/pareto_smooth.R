@@ -305,23 +305,28 @@ pareto_smooth.default <- function(x,
     return(pareto_diags_na(x, return_k, extra_diags))
   }
 
+  if (ndraws_tail < 5) {
+    warning_no_call("Number of tail draws cannot be less than 5. ",
+            "Changing to ", 5, ".")
+    ndraws_tail <- 5
+  }
+
+  if (ndraws_tail >= length(x)){
+    warning_no_call("Tail draws (", ndraws_tail, ") not strictly less than total draws (", length(x), "). Fitting of generalized Pareto distribution not performed.")
+    return(pareto_diags_na(x, return_k, extra_diags))
+  }
+
   if (tail == "both") {
 
     if (ndraws_tail > ndraws / 2) {
-      warning("Number of tail draws cannot be more than half ",
+      warning_no_call("Number of tail draws cannot be more than half ",
               "the total number of draws if both tails are fit, ",
               "changing to ", ndraws / 2, ".")
       ndraws_tail <- ndraws / 2
     }
 
-    if (ndraws_tail < 5) {
-      warning("Number of tail draws cannot be less than 5. ",
-              "Changing to ", 5, ".")
-      ndraws_tail <- 5
-    }
-
     # left tail
-    smoothed <- .pareto_smooth_tail(
+    smoothed <- ps_tail(
       x,
       ndraws_tail = ndraws_tail,
       tail = "left",
@@ -331,7 +336,7 @@ pareto_smooth.default <- function(x,
     left_k <- smoothed$k
 
     # right tail
-    smoothed <-.pareto_smooth_tail(
+    smoothed <-ps_tail(
       x = smoothed$x,
       ndraws_tail = ndraws_tail,
       tail = "right",
@@ -345,7 +350,7 @@ pareto_smooth.default <- function(x,
 
   } else {
 
-    smoothed <- .pareto_smooth_tail(
+    smoothed <- ps_tail(
       x,
       ndraws_tail = ndraws_tail,
       tail = tail,
@@ -354,6 +359,10 @@ pareto_smooth.default <- function(x,
     )
     k <- smoothed$k
     x <- smoothed$x
+  }
+
+  if (is.na(k)) {
+    return(pareto_diags_na(x, return_k, extra_diags))
   }
 
   diags_list <- list(khat = k)
@@ -442,15 +451,43 @@ pareto_convergence_rate.rvar <- function(x, ...) {
 
 
 #' Pareto smooth tail
-#' internal function to pareto smooth the tail of a vector
-#' @noRd
-.pareto_smooth_tail <- function(x,
-                                ndraws_tail,
-                                smooth_draws = TRUE,
-                                tail = c("right", "left"),
-                                are_log_weights = FALSE,
-                                ...
-                                ) {
+#' function to Pareto smooth the tail of a vector. Exported
+#' for usage in other packages, not by users.
+#' 
+#' @param x (multiple options) One of:
+#'  - A matrix of draws for a single variable (iterations x chains). See
+#'    [extract_variable_matrix()].
+#'  - An [`rvar`].
+#' @param ndraws_tail (numeric) number of draws for the tail. If
+#'   `ndraws_tail` is not specified, it will be set to `length(x)`.
+#' @param smooth_draws (logical) Should the tails be smoothed? Default is
+#'   `TRUE`. If `FALSE`, `k` will be calculated but `x` will remain untouched.
+#' @param tail (string) The tail to diagnose/smooth:
+#'   * `"right"`: diagnose/smooth only the right (upper) tail
+#'   * `"left"`: diagnose/smooth only the left (lower) tail
+#' @param are_log_weights (logical) Are the draws log weights? Default is
+#'   `FALSE`. If `TRUE` computation will take into account that the
+#'   draws are log weights, and only right tail will be smoothed.
+#' @template args-methods-dots
+#' @template ref-vehtari-paretosmooth-2022
+#' @seealso [`pareto_smooth`] for the user-facing function.
+#' 
+#' @export
+ps_tail <- function(x,
+                    ndraws_tail,
+                    smooth_draws = TRUE,
+                    tail = c("right", "left"),
+                    are_log_weights = FALSE,
+                    ...
+                    ) {
+
+  if (ndraws_tail < 5) {
+    warning_no_call(
+      "Can't fit generalized Pareto distribution ",
+      "because ndraws_tail is less than 5."
+    )
+    return(list(x = x, k = NA))
+  }
 
   if (are_log_weights) {
     # shift log values for safe exponentiation
@@ -458,67 +495,46 @@ pareto_convergence_rate.rvar <- function(x, ...) {
   }
 
   tail <- match.arg(tail)
-
-  ndraws <- length(x)
-  tail_ids <- seq(ndraws - ndraws_tail + 1, ndraws)
-
   if (tail == "left") {
     x <- -x
   }
+
+  ndraws <- length(x)
+  tail_ids <- seq(ndraws - ndraws_tail + 1, ndraws)
 
   ord <- sort.int(x, index.return = TRUE)
   draws_tail <- ord$x[tail_ids]
 
   if (is_constant(draws_tail)) {
-
     if (tail == "left") {
       x <- -x
     }
-
-    out <- list(x = x, k = NA)
-    return(out)
+    return(list(x = x, k = NA))
   }
 
   cutoff <- ord$x[min(tail_ids) - 1] # largest value smaller than tail values
+  if (cutoff == ord$x[min(tail_ids)]) {
+    # cutoff is not smaller than the tail values
+    cutoff <- cutoff - .Machine$double.eps
+  }
 
   max_tail <- max(draws_tail)
-  min_tail <- min(draws_tail)
 
-  if (ndraws_tail >= 5) {
-    ord <- sort.int(x, index.return = TRUE)
-    if (abs(max_tail - min_tail) < .Machine$double.eps / 100) {
-      warning_no_call(
-        "Can't fit generalized Pareto distribution ",
-        "because all tail values are the same."
-      )
-      smoothed <- NULL
-      k <- NA
-    } else {
-      # save time not sorting since x already sorted
-      if (are_log_weights) {
-        draws_tail <- exp(draws_tail)
-        cutoff <- exp(cutoff)
-      }
-      fit <- gpdfit(draws_tail - cutoff, sort_x = FALSE, ...)
-      k <- fit$k
-      sigma <- fit$sigma
-      if (is.finite(k) && smooth_draws) {
-        p <- (seq_len(ndraws_tail) - 0.5) / ndraws_tail
-        smoothed <- qgeneralized_pareto(p = p, mu = cutoff, k = k, sigma = sigma)
-        if (are_log_weights) {
-          smoothed <- log(smoothed)
-        }
-      } else {
-        smoothed <- NULL
-      }
+  if (are_log_weights) {
+    draws_tail <- exp(draws_tail)
+    cutoff <- exp(cutoff)
+  }
+  fit <- gpdfit(draws_tail - cutoff, sort_x = FALSE, ...)
+  k <- fit$k
+  sigma <- fit$sigma
+  if (is.finite(k) && smooth_draws) {
+    p <- (seq_len(ndraws_tail) - 0.5) / ndraws_tail
+    smoothed <- qgeneralized_pareto(p = p, mu = cutoff, k = k, sigma = sigma)
+    if (are_log_weights) {
+      smoothed <- log(smoothed)
     }
   } else {
-    warning_no_call(
-      "Can't fit generalized Pareto distribution ",
-      "because ndraws_tail is less than 5."
-    )
     smoothed <- NULL
-    k <- NA
   }
 
   # truncate at max of raw draws
@@ -536,10 +552,10 @@ pareto_convergence_rate.rvar <- function(x, ...) {
   return(out)
 }
 
-#' Extra pareto-k diagnostics
+#' Extra Pareto-k diagnostics
 #'
 #' internal function to calculate the extra diagnostics for a given
-#' pareto k and number of draws ndraws
+#' Pareto-k and number of draws ndraws
 #' @noRd
 .pareto_smooth_extra_diags <- function(k, ndraws, ...) {
 
@@ -569,7 +585,10 @@ pareto_convergence_rate.rvar <- function(x, ...) {
 #' @return minimum sample size
 #' @export
 ps_min_ss <- function(k, ...) {
-  if (k < 1) {
+  if (is.na(k)) {
+    return(NA)
+  }
+  if (isTRUE(k < 1)) {
     out <- 10^(1 / (1 - max(0, k)))
   } else {
     out <- Inf
@@ -639,7 +658,12 @@ ps_convergence_rate <- function(k, ndraws, ...) {
 #' @return tail length
 #' @export
 ps_tail_length <- function(ndraws, r_eff, ...) {
-  ceiling(ifelse(ndraws > 225, 3 * sqrt(ndraws / r_eff), ndraws / 5))
+  floor(
+    ifelse(
+      ndraws * r_eff > 225,
+      3 * sqrt(ndraws / r_eff),
+      ndraws / 5)
+  )
 }
 
 #' Pareto-k diagnostic message
