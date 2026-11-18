@@ -1,4 +1,41 @@
+# posterior 1.8.0
+
+### Enhancements
+
+* Improve performance by avoiding full sorts in `ps_tail()` and `mcse_quantile()`.
+* Add `ps_tail_sorted_log_ratios()` for loo.
+* `bind_draws()` for `draws_array` objects is faster and holds one copy of the
+result instead of about three.
+* `subset_draws()` returns its input without copying it when every variable is
+selected.
+* All warnings now have the class `posterior_warning` and a class for each
+cause. Calling packages can catch, count, or muffle each type of warning (#470).
+* The Pareto tail length in `pareto_khat()`, `pareto_diags()`,
+`pareto_smooth()`, and `ps_tail_length()` now depends only on the number of
+draws (#446, #478). For MCMC draws, results with the default `r_eff = NULL`
+change slightly because `r_eff` was previously estimated with `ess_tail()`.
+These functions are also faster now. `r_eff` is ignored, with a warning unless
+it is `NULL` or `1` (#478).
+
+### Bug Fixes
+
+* Fix truncation operation for `uniformity_test()` (#462)
+* mid-p value adjusment for discrete `PRIT` test method  
+* Add additional unit tests for `uniformity_test()` 
+* Remove the offset at a tied Pareto tail cutoff in `ps_tail()` and `pareto_pit()` (#468)
+* Use a tolerance relative to the magnitude of `x` in `is_constant()` (#469)
+* Use `x >= q` for the upper tail in `ess_quantile()` (#471)
+
+
+# posterior 1.7.1
+
+* Minor release to accommodate the JOSS paper.
+
 # posterior 1.7.0
+
+### Enhancements
+
+* Add `truncate` argument to `uniformity_test()` to allow for custom truncation
 
 ### Bug Fixes
 
@@ -9,7 +46,7 @@
 * Extend and export several functions related to the generalized
 Pareto distribution for use in other packages. (#408)
 * Support Pareto PIT functionality via `pareto_pit`. (#435)
-* Allow more warnings to be turned off via option 
+* Allow more warnings to be turned off via option
 `posterior.warn_on_merge_chains`.
 * Improve documentation in many places.
 * Improve tests by checking for edge cases.
@@ -41,7 +78,7 @@ Pareto distribution for use in other packages. (#408)
   `pareto_khat_threshold()`, `pareto_min_ss()`, `pareto_convergence_rate()`)
 * `thin_draws()` now automatically thins draws based on ESS by default,
   and non-integer thinning is possible.
-* Matrix multiplication of `rvar`s can now be done with the base matrix 
+* Matrix multiplication of `rvar`s can now be done with the base matrix
   multiplication operator (`%*%`) instead of `%**%` in R >= 4.3.
 * `variables()`, `variables<-()`, `set_variables()`, and `nvariables()` now
   support a `with_indices` argument, which determines whether variable names
@@ -49,8 +86,8 @@ Pareto distribution for use in other packages. (#408)
   (#208).
 * Add `extract_variable_array()` function to extract variables with indices
   into arrays of iterations x chains x any remaining dimensions (#340).
-* For types that support `factor` variables (`draws_df`, `draws_list`, and 
-  `draws_rvars`), `extract_variable()` and `extract_variable_matrix()` can 
+* For types that support `factor` variables (`draws_df`, `draws_list`, and
+  `draws_rvars`), `extract_variable()` and `extract_variable_matrix()` can
   now return `factor`s.
 
 # posterior 1.5.0
@@ -72,7 +109,7 @@ Pareto distribution for use in other packages. (#408)
 ### Bug Fixes
 
 * Ensure `rfun()` works with primitive functions (#290) and dots arguments (#291).
-* Provide implementations of `vctrs::vec_proxy_equal()`, 
+* Provide implementations of `vctrs::vec_proxy_equal()`,
 `vctrs::vec_proxy_compare()`, and `vctrs::vec_proxy_order()`.
 * Minor future-proofing of `cbind(<rvar>)`, `rbind(<rvar>)`, and `chol(<rvar>)`
   for R 4.4 (#304).
@@ -84,8 +121,8 @@ Pareto distribution for use in other packages. (#408)
 
 ### Bug Fixes
 
-* Delay applying `tibble::num()` formatting to output from `summarise_draws()` 
-  until `print()` is called so that summary output can be easily converted to a 
+* Delay applying `tibble::num()` formatting to output from `summarise_draws()`
+  until `print()` is called so that summary output can be easily converted to a
   vanilla data frame (#275).
 
 
@@ -99,18 +136,18 @@ Pareto distribution for use in other packages. (#408)
 * The `draws_df()`, `draws_list()`, and `draws_rvars()` formats now support
   discrete variables stored as `factors` / `ordered`s (or `rvar_factor`s /
   `rvar_ordered`s). If converted to formats that do not support discrete
-  variables with named levels (`draws_matrix()` and `draws_array()`), 
+  variables with named levels (`draws_matrix()` and `draws_array()`),
   factor-like variables are converted to `numeric`s.
 * Made `match()` and `%in%` generic and added support for `rvar`s to both
   functions.
 * Added `modal_category()`, `entropy()`, and `dissent()` functions for
   summarizing discrete draws.
-* Allow lists of draws objects to be passed as the first argument to 
+* Allow lists of draws objects to be passed as the first argument to
   `bind_draws()` (#253).
 * Improving formatting of `summarise_draws` output via `tibble::num`.
 * `print.rvar()` and `format.rvar()` now default to a smaller number of
   significant digits in more cases, including when printing in data frames.
-  This is controlled by the new `"posterior.digits"` option (see 
+  This is controlled by the new `"posterior.digits"` option (see
   `help("posterior-package")`).
 * Implemented faster `vec_proxy.rvar()` and `vec_restore.rvar()`, improving
   performance of `rvar`s in `tibble`s (and elsewhere `vctrs` is used).
@@ -144,9 +181,9 @@ Pareto distribution for use in other packages. (#408)
 * Support remaining modes of `diag()` for `rvar`s (#246).
 * Better parsing for named indices in `as_draws_rvars()`, including nested use
 of `[`, like `x[y[1],2]` (#243).
-* Allow 0-length `rvar`s with `ndraws() > 1` (#242). 
+* Allow 0-length `rvar`s with `ndraws() > 1` (#242).
 * Ensure 0-length `rvar`s can be cast to `draws` formats (#242).
-* Don't treat length-1 `rvar`s with more than 1 dimension as scalars when 
+* Don't treat length-1 `rvar`s with more than 1 dimension as scalars when
 casting to other formats (#248).
 
 
@@ -173,9 +210,9 @@ casting to other formats (#248).
 
 ### Bug Fixes
 
-* fix hidden variables in `bind_draws.draws_df` when binding 
+* fix hidden variables in `bind_draws.draws_df` when binding
 more than two objects thanks to Jouni Helske (#204)
-* fix output of `pillar::glimpse()` when used on a data frame containing 
+* fix output of `pillar::glimpse()` when used on a data frame containing
 `rvar`s (#210)
 * drop `"draws"` and `"draws_df"` classes from `draws_df` objects if meta data
 columns are removed by a `dplyr` operation (#202)
@@ -187,7 +224,7 @@ columns are removed by a `dplyr` operation (#202)
 
 ### Enhancements
 
-* use `matrixStats` to speed up convergence functions (#190) and 
+* use `matrixStats` to speed up convergence functions (#190) and
 `rvar` summaries (#200)
 
 ### Bug Fixes
@@ -200,7 +237,7 @@ Karl Dunkle Werner and Alexey Stukalov (#188)
 ### Other Changes
 
 * No longer check for constant-per-chain input in effective
-sample size diagnostics as this is overly conservative 
+sample size diagnostics as this is overly conservative
 especially for `ess_tail`. (#198)
 
 

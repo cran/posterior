@@ -296,7 +296,11 @@ ess_median <- function(x, ...) {
     len <- length(x)
     prob <- (len - 0.5) / len
   }
-  I <- x <= quantile(x, prob)
+  q <- quantile(x, prob)
+  # the upper-tail indicator mirrors the lower-tail indicator, so that for
+  # discrete draws the result for x at prob equals the result for -x at
+  # 1 - prob
+  I <- if (prob > 0.5) x >= q else x <= q
   .ess(.split_chains(I))
 }
 
@@ -425,10 +429,17 @@ mcse_median <- function(x, ...) {
   ess <- ess_quantile(x, prob)
   p <- c(0.1586553, 0.8413447)
   a <- qbeta(p, ess * prob + 1, ess * (1 - prob) + 1)
-  ssims <- sort(x)
-  S <- length(ssims)
-  th1 <- ssims[max(floor(a[1] * S), 1)]
-  th2 <- ssims[min(ceiling(a[2] * S), S)]
+  x <- as.vector(x)
+  S <- length(x)
+  i1 <- max(floor(a[1] * S), 1)
+  i2 <- min(ceiling(a[2] * S), S)
+  if (anyNA(c(i1, i2))) {
+    return(NA_real_)
+  }
+  # only the two order statistics are needed
+  ssims <- sort.int(x, partial = unique(c(i1, i2)))
+  th1 <- ssims[i1]
+  th2 <- ssims[i2]
   as.vector((th2 - th1) / 2)
 }
 
@@ -495,11 +506,12 @@ mcse_sd.default <- function(x, ...) {
   # has (X-E[X])^2. The following ESS is based on a relevant quantity
   # in the computation and is empirically a good choice.
   sims_c <- x - mean(x)
-  ess <- ess_mean((sims_c)^2)
+  sims_sq <- sims_c^2
+  ess <- ess_mean(sims_sq)
   # Variance of variance estimate by Kenney and Keeping (1951, p. 141),
   # which doesn't assume normality of sims.
-  Evar <- mean(sims_c^2)
-  varvar <- (mean(sims_c^4) - Evar^2) / ess
+  Evar <- mean(sims_sq)
+  varvar <- mean((sims_sq - Evar)^2) / ess
   # The first order Taylor series approximation of variance of sd.
   # Kenney and Keeping (1951, p. 141) write "...since fluctuations of
   # any moment are of order N^{-1/2}, squares and higher powers of
@@ -784,7 +796,10 @@ fold_draws <- function(x) {
   # Safety check for negative values and with max ess equal to ess*log10(ess)
   tau_bound <- 1 / log10(ess)
   if (tau_hat < tau_bound) {
-    warning_no_call("The ESS has been capped to avoid unstable estimates.")
+    warning_no_call(
+      "The ESS has been capped to avoid unstable estimates.",
+      class = "posterior_warning_ess_capped"
+    )
     tau_hat <- tau_bound
   }
   ess <- ess / tau_hat

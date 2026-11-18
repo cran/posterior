@@ -18,7 +18,7 @@ pareto_khat(x, ...)
   ...
 )
 
-\method{pareto_khat}{rvar}(x, ...)
+\method{pareto_khat}{rvar}(x, ..., r_eff = NULL)
 }
 \arguments{
 \item{x}{(multiple options) One of:
@@ -39,15 +39,12 @@ pareto_khat(x, ...)
 
 The default is \code{"both"}.}
 
-\item{r_eff}{(numeric) relative effective sample size estimate. If
-\code{r_eff} is NULL, it will be calculated assuming the draws are
-from MCMC. Default is NULL.}
+\item{r_eff}{Ignored. A value other than \code{NULL} or 1 gives a warning.
+Default is \code{NULL}.}
 
 \item{ndraws_tail}{(numeric) number of draws for the tail. If
-\code{ndraws_tail} is not specified, it will be calculated as
-ceiling(3 * sqrt(length(x) / r_eff)) if length(x) > 225 and
-length(x) / 5 otherwise (see Appendix H in Vehtari et
-al. (2024)).}
+\code{ndraws_tail} is not specified, it is calculated with
+\code{\link[=ps_tail_length]{ps_tail_length()}}.}
 
 \item{verbose}{(logical) Should diagnostic messages be printed? If
 \code{TRUE}, messages related to Pareto diagnostics will be
@@ -95,19 +92,19 @@ Jonah Gabry (2024). Pareto Smoothed Importance Sampling.
 \code{\link{pareto_diags}} for additional related diagnostics, and
 \code{\link{pareto_smooth}} for Pareto smoothed draws.
 
-Other diagnostics: 
-\code{\link{ess_basic}()},
-\code{\link{ess_bulk}()},
-\code{\link{ess_quantile}()},
-\code{\link{ess_sd}()},
-\code{\link{ess_tail}()},
-\code{\link{mcse_mean}()},
-\code{\link{mcse_quantile}()},
-\code{\link{mcse_sd}()},
-\code{\link{pareto_diags}()},
-\code{\link{rhat}()},
-\code{\link{rhat_basic}()},
-\code{\link{rhat_nested}()},
-\code{\link{rstar}()}
+Other diagnostics:
+\code{\link[=ess_basic]{ess_basic()}},
+\code{\link[=ess_bulk]{ess_bulk()}},
+\code{\link[=ess_quantile]{ess_quantile()}},
+\code{\link[=ess_sd]{ess_sd()}},
+\code{\link[=ess_tail]{ess_tail()}},
+\code{\link[=mcse_mean]{mcse_mean()}},
+\code{\link[=mcse_quantile]{mcse_quantile()}},
+\code{\link[=mcse_sd]{mcse_sd()}},
+\code{\link[=pareto_diags]{pareto_diags()}},
+\code{\link[=rhat]{rhat()}},
+\code{\link[=rhat_basic]{rhat_basic()}},
+\code{\link[=rhat_nested]{rhat_nested()}},
+\code{\link[=rstar]{rstar()}}
 }
 \concept{diagnostics}

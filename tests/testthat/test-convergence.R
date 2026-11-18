@@ -46,6 +46,26 @@ test_that("negative ess estimates are avoided with a warning", {
   expect_equal(ess, 3000)
 })
 
+test_that("capped ess warning has posterior warning classes", {
+  x <- stats::arima.sim(list(ar=-0.9), 1000)
+  w <- tryCatch(ess_basic(x), warning = identity)
+  expect_s3_class(w, "posterior_warning_ess_capped")
+  expect_s3_class(w, "posterior_warning")
+})
+
+test_that("calling code can count and muffle classed warnings", {
+  x <- replicate(3, stats::arima.sim(list(ar=-0.9), 1000))
+  n_capped <- 0
+  expect_silent(withCallingHandlers(
+    apply(x, 2, ess_basic),
+    posterior_warning_ess_capped = function(w) {
+      n_capped <<- n_capped + 1
+      invokeRestart("muffleWarning")
+    }
+  ))
+  expect_equal(n_capped, 3)
+})
+
 test_that("mcse diagnostics return reasonable values", {
   tau <- extract_variable_matrix(example_draws(), "tau")
 
@@ -54,6 +74,11 @@ test_that("mcse diagnostics return reasonable values", {
 
   mcse <- mcse_sd(tau)
   expect_true(mcse > 0.15 & mcse < 0.25)
+
+  x <- rep(c(-1e8 - 1, -1e8 + 1, 1e8 - 1, 1e8 + 1), 100)
+  x_sq <- (x - mean(x))^2
+  expected <- sqrt(mean((x_sq - mean(x_sq))^2) / ess_mean(x_sq) / mean(x_sq) / 4)
+  expect_equal(mcse_sd(x), expected)
 
   mcse <- mcse_quantile(tau, probs = c(0.2, 0.8))
   expect_equal(names(mcse), c("mcse_q20", "mcse_q80"))
@@ -110,6 +135,66 @@ test_that("convergence diagnostics handle special cases correctly", {
   # expect_true(is.na(ess_basic(x)))
 })
 
+test_that("ess_quantile treats the lower and upper tails of discrete draws alike", {
+  set.seed(1234)
+  x <- matrix(rbinom(4000, 1, 0.3), ncol = 4)
+  # more than 5% of the draws are at the maximum
+  expect_false(is.na(ess_quantile(x, 0.95)))
+  expect_false(is.na(ess_tail(x)))
+  expect_equal(
+    ess_quantile(x, 0.95, names = FALSE),
+    ess_quantile(-x, 0.05, names = FALSE)
+  )
+  expect_equal(
+    ess_quantile(x, 0.05, names = FALSE),
+    ess_quantile(-x, 0.95, names = FALSE)
+  )
+  expect_equal(ess_tail(x), ess_tail(-x))
+
+  # for continuous draws, x >= q is the complement of x <= q
+  y <- matrix(rnorm(4000), ncol = 4)
+  expect_equal(
+    ess_quantile(y, 0.95, names = FALSE),
+    .ess(.split_chains(y <= quantile(y, 0.95)))
+  )
+})
+
+test_that("is_constant uses a tolerance relative to the magnitude of x", {
+  eps <- .Machine$double.eps
+  expect_true(is_constant(rep(0, 5)))
+  expect_true(is_constant(rep(-3e-300, 5)))
+  expect_true(is_constant(c(-Inf, -Inf)))
+  # values that differ by at most eps relative to their magnitude
+  expect_true(is_constant(c(1, 1 + eps)))
+  expect_true(is_constant(1e10 * c(1, 1 + eps)))
+  # small values that differ relative to their magnitude
+  expect_false(is_constant(c(0, 1e-300)))
+  expect_false(is_constant(1e-20 * c(1, 2)))
+  expect_false(is_constant(c(1, 1 + 4 * eps)))
+  expect_false(is_constant(c(-Inf, 2)))
+  expect_true(is.na(is_constant(c(1, NA))))
+})
+
+test_that("convergence diagnostics do not depend on the scale of the draws", {
+  set.seed(1234)
+  x <- matrix(exp(rnorm(400)), ncol = 4)
+  for (s in c(1e-10, 1e-100)) {
+    expect_equal(rhat_basic(s * x), rhat_basic(x))
+    expect_equal(ess_basic(s * x), ess_basic(x))
+    expect_equal(ess_mean(s * x), ess_mean(x))
+    expect_equal(ess_quantile(s * x, 0.9), ess_quantile(x, 0.9))
+    expect_equal(
+      rhat_nested(s * x, superchain_ids = c(1, 1, 2, 2)),
+      rhat_nested(x, superchain_ids = c(1, 1, 2, 2))
+    )
+  }
+  # ess_sd() works on squared deviations, and their autocovariance is of
+  # the order s^4, which underflows for s = 1e-100
+  for (s in c(1e-10, 1e-50)) {
+    expect_equal(ess_sd(s * x), ess_sd(x))
+  }
+})
+
 test_that("convergence diagnostics throw correct errors", {
   mu <- extract_variable_matrix(example_draws(), "mu")
   expect_error(ess_quantile(mu, probs = 1.2), "'probs' must contain values between 0 and 1")
@@ -144,4 +229,23 @@ test_that("autocovariance returns correct results", {
   ac1 <- autocovariance(x)
   ac2 <- acf(x, type = "covariance", lag.max = length(x), plot = FALSE)$acf[, 1, 1]
   expect_equal(ac1, ac2)
+})
+
+test_that("mcse_quantile gives the order statistics of a full sort", {
+  # reference: the computation with sort() of posterior 1.7.1
+  mcse_quantile_full_sort <- function(x, prob) {
+    ess <- ess_quantile(x, prob)
+    a <- qbeta(c(0.1586553, 0.8413447), ess * prob + 1, ess * (1 - prob) + 1)
+    ssims <- sort(x)
+    S <- length(ssims)
+    (ssims[min(ceiling(a[2] * S), S)] - ssims[max(floor(a[1] * S), 1)]) / 2
+  }
+  tau <- extract_variable_matrix(example_draws(), "tau")
+  for (prob in c(0.001, 0.05, 0.5, 0.95, 0.999)) {
+    expect_identical(
+      unname(mcse_quantile(tau, probs = prob)),
+      as.vector(mcse_quantile_full_sort(tau, prob))
+    )
+  }
+  expect_true(is.na(mcse_quantile(c(rnorm(100), NA), probs = 0.5)))
 })

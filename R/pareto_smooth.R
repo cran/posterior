@@ -46,7 +46,8 @@ pareto_khat.default <- function(x,
 
 #' @rdname pareto_khat
 #' @export
-pareto_khat.rvar <- function(x, ...) {
+pareto_khat.rvar <- function(x, ..., r_eff = NULL) {
+  warn_r_eff_ignored(r_eff)
   draws_diags <- summarise_rvar_by_element_with_chains(
     x,
     pareto_khat.default,
@@ -148,7 +149,8 @@ pareto_diags.default <- function(x,
 
 #' @rdname pareto_diags
 #' @export
-pareto_diags.rvar <- function(x, ...) {
+pareto_diags.rvar <- function(x, ..., r_eff = NULL) {
+  warn_r_eff_ignored(r_eff)
   draws_diags <- summarise_rvar_by_element_with_chains(
     x,
     pareto_diags.default,
@@ -216,8 +218,10 @@ pareto_smooth <- function(x, ...) UseMethod("pareto_smooth")
 
 #' @rdname pareto_smooth
 #' @export
-pareto_smooth.rvar <- function(x, return_k = FALSE, extra_diags = FALSE, ...) {
-
+pareto_smooth.rvar <- function(
+  x, return_k = FALSE, extra_diags = FALSE, ..., r_eff = NULL
+) {
+  warn_r_eff_ignored(r_eff)
   if (extra_diags) {
     return_k <- TRUE
   }
@@ -262,9 +266,7 @@ pareto_smooth.default <- function(x,
                                   are_log_weights = FALSE,
                                   ...) {
 
-  if (!is.null(r_eff)) {
-    r_eff <- as_one_numeric(r_eff)
-  }
+  warn_r_eff_ignored(r_eff)
   if (!is.null(ndraws_tail)) {
     ndraws_tail <- as_one_integer(ndraws_tail)
   }
@@ -279,7 +281,10 @@ pareto_smooth.default <- function(x,
 
   # check for infinite or na values
   if (should_return_NA(x)) {
-    warning_no_call("Input contains infinite or NA values, is constant or has constant tail. Fitting of generalized Pareto distribution not performed.")
+    warning_no_call(
+      "Input contains infinite or NA values, is constant or has constant tail. Fitting of generalized Pareto distribution not performed.",
+      class = "posterior_warning_pareto_invalid_input"
+    )
     return(pareto_diags_na(x, return_k, extra_diags))
   }
 
@@ -290,29 +295,31 @@ pareto_smooth.default <- function(x,
   tail <- match.arg(tail)
   ndraws <- length(x)
 
-  # automatically calculate relative efficiency
-  if (is.null(r_eff)) {
-    r_eff <- ess_tail(x) / ndraws
-  }
-
   # automatically calculate tail length
   if (is.null(ndraws_tail)) {
-    ndraws_tail <- ps_tail_length(ndraws, r_eff)
+    ndraws_tail <- ps_tail_length(ndraws)
   }
 
   if (is.na(ndraws_tail)) {
-    warning_no_call("Input contains infinite or NA values, is constant, or has constant tail. Fitting of generalized Pareto distribution not performed.")
+    warning_no_call(
+      "Input contains infinite or NA values, is constant, or has constant tail. Fitting of generalized Pareto distribution not performed.",
+      class = "posterior_warning_pareto_invalid_input"
+    )
     return(pareto_diags_na(x, return_k, extra_diags))
   }
 
   if (ndraws_tail < 5) {
     warning_no_call("Number of tail draws cannot be less than 5. ",
-            "Changing to ", 5, ".")
+            "Changing to ", 5, ".",
+            class = "posterior_warning_pareto_tail_too_short")
     ndraws_tail <- 5
   }
 
   if (ndraws_tail >= length(x)){
-    warning_no_call("Tail draws (", ndraws_tail, ") not strictly less than total draws (", length(x), "). Fitting of generalized Pareto distribution not performed.")
+    warning_no_call(
+      "Tail draws (", ndraws_tail, ") not strictly less than total draws (", length(x), "). Fitting of generalized Pareto distribution not performed.",
+      class = "posterior_warning_pareto_tail_exceeds_draws"
+    )
     return(pareto_diags_na(x, return_k, extra_diags))
   }
 
@@ -321,7 +328,8 @@ pareto_smooth.default <- function(x,
     if (ndraws_tail > ndraws / 2) {
       warning_no_call("Number of tail draws cannot be more than half ",
               "the total number of draws if both tails are fit, ",
-              "changing to ", ndraws / 2, ".")
+              "changing to ", ndraws / 2, ".",
+              class = "posterior_warning_pareto_tail_too_long")
       ndraws_tail <- ndraws / 2
     }
 
@@ -345,7 +353,11 @@ pareto_smooth.default <- function(x,
     )
     right_k <- smoothed$k
 
-    k <- max(left_k, right_k, na.rm = TRUE)
+    if (is.na(left_k) && is.na(right_k)) {
+      k <- NA
+    } else {
+      k <- max(left_k, right_k, na.rm = TRUE)
+    }
     x <- smoothed$x
 
   } else {
@@ -484,7 +496,8 @@ ps_tail <- function(x,
   if (ndraws_tail < 5) {
     warning_no_call(
       "Can't fit generalized Pareto distribution ",
-      "because ndraws_tail is less than 5."
+      "because ndraws_tail is less than 5.",
+      class = "posterior_warning_pareto_tail_not_fitted"
     )
     return(list(x = x, k = NA))
   }
@@ -499,11 +512,9 @@ ps_tail <- function(x,
     x <- -x
   }
 
-  ndraws <- length(x)
-  tail_ids <- seq(ndraws - ndraws_tail + 1, ndraws)
-
-  ord <- sort.int(x, index.return = TRUE)
-  draws_tail <- ord$x[tail_ids]
+  selection <- .ps_tail_selection(x, ndraws_tail)
+  ix_tail <- selection$ix
+  draws_tail <- x[ix_tail]
 
   if (is_constant(draws_tail)) {
     if (tail == "left") {
@@ -512,44 +523,148 @@ ps_tail <- function(x,
     return(list(x = x, k = NA))
   }
 
-  cutoff <- ord$x[min(tail_ids) - 1] # largest value smaller than tail values
-  if (cutoff == ord$x[min(tail_ids)]) {
-    # cutoff is not smaller than the tail values
-    cutoff <- cutoff - .Machine$double.eps
-  }
-
-  max_tail <- max(draws_tail)
+  # largest value not in the tail; tail values equal to it give zero
+  # excesses, which are in the support of the generalized Pareto distribution
+  cutoff <- selection$cutoff
 
   if (are_log_weights) {
-    draws_tail <- exp(draws_tail)
-    cutoff <- exp(cutoff)
-  }
-  fit <- gpdfit(draws_tail - cutoff, sort_x = FALSE, ...)
-  k <- fit$k
-  sigma <- fit$sigma
-  if (is.finite(k) && smooth_draws) {
-    p <- (seq_len(ndraws_tail) - 0.5) / ndraws_tail
-    smoothed <- qgeneralized_pareto(p = p, mu = cutoff, k = k, sigma = sigma)
-    if (are_log_weights) {
-      smoothed <- log(smoothed)
-    }
+    smoothed <- ps_tail_sorted_log_ratios(
+      x = draws_tail,
+      cutoff = cutoff,
+      smooth_draws = smooth_draws,
+      ...
+    )
   } else {
-    smoothed <- NULL
+    smoothed <- .ps_tail_sorted(
+      x = draws_tail,
+      excess = draws_tail - cutoff,
+      cutoff = cutoff,
+      smooth_draws = smooth_draws,
+      ...
+    )
   }
 
-  # truncate at max of raw draws
-  if (!is.null(smoothed)) {
-    smoothed[smoothed > max_tail] <- max_tail
-    x[ord$ix[tail_ids]] <- smoothed
+  k <- smoothed$k
+
+  if (is.finite(k) && smooth_draws) {
+    x[ix_tail] <- smoothed$tail
   }
 
   if (tail == "left") {
     x <- -x
   }
 
-  out <- list(x = x, k = k)
+  list(x = x, k = k)
+}
 
-  return(out)
+#' Select the right tail without a full sort
+#'
+#' @param x Vector of draws.
+#' @param ndraws_tail Number of draws in the tail.
+#' @return A list with elements `ix`, the indices of the `ndraws_tail` largest
+#'   values of `x` in ascending order of the values, and `cutoff`, the largest
+#'   value not in the tail. The result is the same as with
+#'   `order(x, method = "radix")`, also with ties.
+#'
+#' @noRd
+.ps_tail_selection <- function(x, ndraws_tail) {
+  ndraws <- length(x)
+  start <- ndraws - ndraws_tail + 1
+
+  if (start > 1 && !anyNA(x)) {
+    cutoff <- sort.int(x, partial = start - 1)[start - 1]
+    # The candidates include all values that tie with the cutoff. The radix
+    # order is stable, so the last ndraws_tail candidates are the tail of a
+    # full sort, also with ties.
+    ix <- which(x >= cutoff)
+    ix <- ix[order(x[ix], method = "radix")]
+    n_ix <- length(ix)
+    return(list(ix = ix[seq(n_ix - ndraws_tail + 1, n_ix)], cutoff = cutoff))
+  }
+
+  ix <- order(x, method = "radix")
+  list(ix = ix[seq(start, ndraws)], cutoff = x[ix[start - 1]])
+}
+
+#' Pareto smooth sorted tail of log ratios
+#'
+#' Function to Pareto smooth a sorted tail of log ratios. Exported
+#' for usage in other packages, not by users.
+#'
+#' @param x Vector of log ratios in the tail, sorted in ascending order and
+#'   shifted so that `exp(x)` does not overflow, e.g. by subtracting the
+#'   maximum of all log ratios.
+#' @param cutoff The largest log ratio not in the tail, on the same shifted
+#'   scale as `x`. Tail values may be equal to it.
+#' @param smooth_draws (logical) Should the tail be smoothed? If `FALSE`,
+#'   only `k` is estimated and `tail` is `x` unchanged.
+#' @param ... Arguments passed to [gpdfit()].
+#' @return A list with elements `tail`, the (smoothed) tail of log ratios, and
+#'   `k`, the estimated shape parameter. Unlike [ps_tail()], the full vector
+#'   of draws is not returned.
+#' @seealso [`ps_tail`] for the general tail smoothing function.
+#'
+#' @export
+ps_tail_sorted_log_ratios <- function(x, cutoff, smooth_draws = TRUE, ...) {
+  if (is.unsorted(x)) {
+    stop_no_call("'x' must be sorted in ascending order.")
+  }
+  if (is_constant(x)) {
+    return(list(tail = x, k = NA))
+  }
+
+  smoothed <- .ps_tail_sorted(
+    x = exp(x),
+    excess = exp_x_minus_exp_y(x, cutoff),
+    cutoff = exp(cutoff),
+    smooth_draws = smooth_draws,
+    ...
+  )
+
+  # log(exp(x)) is not x: it rounds, and it gives -Inf where exp(x) underflows
+  if (is.finite(smoothed$k) && smooth_draws) {
+    smoothed$tail <- log(smoothed$tail)
+  } else {
+    smoothed$tail <- x
+  }
+
+  smoothed
+}
+
+#' Pareto smooth sorted tail
+#'
+#' Internal function to Pareto smooth a sorted tail.
+#'
+#' @param x Vector of tail elements already sorted in ascending order.
+#' @param excess Tail elements minus the cutoff, computed without overflow.
+#' @param cutoff The largest value not in the tail. Tail values may be equal
+#'   to it.
+#' @param smooth_draws Should the tail values be smoothed?
+#' @param ... Passed to [gpdfit()].
+#'
+#' @noRd
+.ps_tail_sorted <- function(x, excess, cutoff, smooth_draws = TRUE, ...) {
+  len <- length(x)
+
+  fit <- gpdfit(excess, sort_x = FALSE, ...)
+  k <- fit$k
+  sigma <- fit$sigma
+
+  if (is.finite(k) && smooth_draws) {
+    tail <- qgeneralized_pareto(
+      p = (seq_len(len) - 0.5) / len,
+      mu = cutoff,
+      k = k,
+      sigma = sigma
+    )
+  } else {
+    tail <- x
+  }
+
+  # truncate at max of raw draws
+  tail[tail > max(x)] <- max(x)
+
+  list(tail = tail, k = k)
 }
 
 #' Extra Pareto-k diagnostics
@@ -627,43 +742,59 @@ ps_khat_threshold <- function(ndraws, ...) {
 #' @return convergence rate
 #' @export
 ps_convergence_rate <- function(k, ndraws, ...) {
-  # allow array of k's
-  rate <- numeric(length(k))
-  # k<0 bounded distribution
-  rate[k < 0] <- 1
-  # k>0 non-finite mean
-  rate[k > 1] <- 0
-  # limit value at k=1/2
-  rate[k == 0.5] <- 1 - 1 / log(ndraws)
-  # smooth approximation for the rest (see Appendix B of PSIS paper)
-  ki <- (k > 0 & k < 1 & k != 0.5)
+  # allow array of k's; which() keeps NA and NaN shapes out of every branch,
+  # so they keep the NA initialization instead of silently reading as 0
+  rate <- rep(NA_real_, length(k))
+  # k<0 bounded distribution, k=0 exponential tail; both converge at rate 1
+  rate[which(k <= 0)] <- 1
+  # k>=1 non-finite mean
+  rate[which(k >= 1)] <- 0
+  # smooth approximation for the rest
+  # this is a numerically stable calculation of the equation on page 31, in Appendix B of PSIS paper
+  ki <- which(k > 0 & k < 1)
   kk <- k[ki]
-  rate[ki] <- pmax(
-    0,
-    (2 * (kk - 1) * ndraws^(2 * kk + 1) + (1 - 2 * kk) * ndraws^(2 * kk) + ndraws^2) /
-      ((ndraws - 1) * (ndraws - ndraws^(2 * kk)))
-  )
+  aa <- 2 * kk - 1
+  near_half <- abs(aa) <= abs(1 - aa)
+  rate_ki <- numeric(length(kk))
+  rate_ki[aa == 0] <- ndraws / (ndraws - 1) - 1 / log(ndraws)
+  use_half <- near_half & aa != 0
+  rate_ki[use_half] <-
+    ndraws / (ndraws - 1) -
+    aa[use_half] / -expm1(-aa[use_half] * log(ndraws))
+  use_one <- !near_half
+  bb <- 1 - aa[use_one]
+  rate_ki[use_one] <-
+    (bb * (ndraws - 1) - expm1(bb * log(ndraws))) /
+    ((ndraws - 1) * -expm1((bb - 1) * log(ndraws)))
+  rate[ki] <- pmax(0, rate_ki)
   rate
+}
+
+warn_r_eff_ignored <- function(r_eff) {
+  if (!is.null(r_eff) && !isTRUE(all(r_eff == 1))) {
+    warning_no_call(
+      "`r_eff` is ignored. The Pareto tail length now depends on the number of draws only.",
+      class = "posterior_warning_pareto_r_eff_ignored"
+    )
+  }
 }
 
 #' Pareto tail length
 #'
-#' Calculate the tail length from number of draws and relative efficiency
-#' r_eff. See Appendix H in Vehtari et al. (2024). This function is
-#' used internally and is exported to be available for other packages.
+#' Calculate the tail length from the number of draws. The tail length is
+#' `floor(3 * sqrt(ndraws))` if `ndraws > 225`, and `floor(ndraws / 5)`
+#' otherwise. This differs from Appendix H in Vehtari et al. (2024), which
+#' also divides by the relative efficiency `r_eff`. This function is used
+#' internally and is exported to be available for other packages.
 #' @family helper-functions
 #' @param ndraws number of draws
-#' @param r_eff relative efficiency
+#' @param r_eff Ignored. A value other than `NULL` or 1 gives a warning.
 #' @param ... unused
 #' @return tail length
 #' @export
-ps_tail_length <- function(ndraws, r_eff, ...) {
-  floor(
-    ifelse(
-      ndraws * r_eff > 225,
-      3 * sqrt(ndraws / r_eff),
-      ndraws / 5)
-  )
+ps_tail_length <- function(ndraws, r_eff = NULL, ...) {
+  warn_r_eff_ignored(r_eff)
+  floor(ifelse(ndraws > 225, 3 * sqrt(ndraws), ndraws / 5))
 }
 
 #' Pareto-k diagnostic message

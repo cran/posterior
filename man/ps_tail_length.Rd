@@ -4,12 +4,12 @@
 \alias{ps_tail_length}
 \title{Pareto tail length}
 \usage{
-ps_tail_length(ndraws, r_eff, ...)
+ps_tail_length(ndraws, r_eff = NULL, ...)
 }
 \arguments{
 \item{ndraws}{number of draws}
 
-\item{r_eff}{relative efficiency}
+\item{r_eff}{Ignored. A value other than \code{NULL} or 1 gives a warning.}
 
 \item{...}{unused}
 }
@@ -17,15 +17,17 @@ ps_tail_length(ndraws, r_eff, ...)
 tail length
 }
 \description{
-Calculate the tail length from number of draws and relative efficiency
-r_eff. See Appendix H in Vehtari et al. (2024). This function is
-used internally and is exported to be available for other packages.
+Calculate the tail length from the number of draws. The tail length is
+\code{floor(3 * sqrt(ndraws))} if \code{ndraws > 225}, and \code{floor(ndraws / 5)}
+otherwise. This differs from Appendix H in Vehtari et al. (2024), which
+also divides by the relative efficiency \code{r_eff}. This function is used
+internally and is exported to be available for other packages.
 }
 \seealso{
-Other helper-functions: 
-\code{\link{gpdfit}()},
-\code{\link{ps_convergence_rate}()},
-\code{\link{ps_khat_threshold}()},
-\code{\link{ps_min_ss}()}
+Other helper-functions:
+\code{\link[=gpdfit]{gpdfit()}},
+\code{\link[=ps_convergence_rate]{ps_convergence_rate()}},
+\code{\link[=ps_khat_threshold]{ps_khat_threshold()}},
+\code{\link[=ps_min_ss]{ps_min_ss()}}
 }
 \concept{helper-functions}

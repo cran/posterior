@@ -13,6 +13,18 @@ test_that("pareto_khat handles constant tail correctly", {
 })
 
 
+test_that("pareto_khat handles both tails being constant correctly", {
+
+  # left and right tails are constant, so khat should be NA in all cases
+  x <- c(rep(-100, 10), sort(rnorm(100)), rep(100, 10))
+  
+  expect_true(is.na(pareto_khat(x, tail = "left", ndraws_tail = 10)))
+  expect_true(is.na(pareto_khat(x, tail = "right", ndraws_tail = 10)))
+  expect_true(is.na(pareto_khat(x, tail = "both", ndraws_tail = 10)))
+
+})
+
+
 test_that("pareto_smooth handles non-constant x with constant tail", {
 
   # x is non-constant but the right tail is constant
@@ -68,13 +80,22 @@ test_that("pareto_khat handles ndraws_tail argument", {
 })
 
 
-test_that("pareto_khat handles r_eff argument", {
-
+test_that("pareto_khat ignores r_eff with a warning", {
   tau <- extract_variable_matrix(example_draws(), "tau")
-  pk1 <- pareto_khat(tau, r_eff = 1)
-  pk0.6 <- pareto_khat(tau, r_eff = 0.6)
-  expect_true(pk1 < pk0.6)
+  cls <- "posterior_warning_pareto_r_eff_ignored"
+  expect_warning(pk <- pareto_khat(tau, r_eff = 0.6), class = cls)
+  expect_equal(pk, pareto_khat(tau))
+  expect_warning(pareto_smooth(tau, r_eff = 0.6, ndraws_tail = 20), class = cls)
+  expect_no_warning(pareto_khat(tau, r_eff = 1))
+  expect_no_warning(pareto_khat(tau, r_eff = c(1, 1)))
+})
 
+test_that("ps_tail_length depends on ndraws only", {
+  expect_equal(ps_tail_length(100), 20)
+  expect_equal(ps_tail_length(1000), floor(3 * sqrt(1000)))
+  expect_warning(out <- ps_tail_length(1000, 0.5),
+                 class = "posterior_warning_pareto_r_eff_ignored")
+  expect_equal(out, ps_tail_length(1000))
 })
 
 
@@ -212,6 +233,23 @@ test_that("pareto_khat functions work with rvars with and without chains", {
 
 })
 
+test_that("rvar methods give one r_eff warning", {
+  theta <- as_draws_rvars(example_draws())$theta
+  expect_length(capture_warnings(pareto_khat(theta, r_eff = 0.5)), 1)
+  expect_length(capture_warnings(pareto_diags(theta, r_eff = 0.5)), 1)
+  expect_length(capture_warnings(pareto_smooth(theta, r_eff = 0.5)), 1)
+})
+
+test_that("rvar methods pass positional tail via dots", {
+  rv <- rvar(rexp(4000), nchains = 4)
+  expect_no_warning(k <- pareto_khat(rv, "left"))
+  expect_equal(k, pareto_khat(rv, tail = "left"))
+  expect_no_warning(d <- pareto_diags(rv, "left"))
+  expect_equal(d, pareto_diags(rv, tail = "left"))
+  expect_no_warning(s <- pareto_smooth(rv, TRUE, FALSE, "left", verbose = FALSE))
+  expect_equal(s, pareto_smooth(rv, return_k = TRUE, tail = "left", verbose = FALSE))
+})
+
 test_that("pareto_smooth returns x with smoothed tail(s)", {
   mu <- extract_variable_matrix(example_draws(), "mu")
 
@@ -249,18 +287,126 @@ test_that("pareto_smooth works for log_weights", {
 
 })
 
-test_that("check ps_tail behavior for ndraws_tail less than 5", {
-  w <- c(1:25, 1e3, 1e3, 1e3)
-  lw <- log(w)
+test_that("exp_x_minus_exp_y is stable for nearby values", {
+  cutoff <- -30
+  x <- cutoff + 1e-14
 
-  # prints correct warning
+  expect_equal(exp_x_minus_exp_y(x, cutoff), 9.973486536736925e-28)
+  expect_equal(exp_x_minus_exp_y(0, -1000), 1)
+})
+
+test_that("user-facing pareto functions reject -Inf draws", {
+  # -Inf is a valid zero weight for the internal helpers, but the user-facing
+  # functions take draws rather than weights and decline to fit
+  set.seed(1)
+  x <- c(-Inf, rnorm(999))
+  msg <- "Input contains infinite or NA values, is constant or has constant tail"
+
+  expect_warning(khat <- pareto_khat(x), msg)
+  expect_identical(khat, NA_real_)
+
+  expect_warning(diags <- pareto_diags(x), msg)
+  expect_named(diags, c("khat", "min_ss", "khat_threshold", "convergence_rate"))
+  expect_true(all(is.na(unlist(diags))))
+
+  # smoothing returns the draws unchanged rather than silently altering them
+  expect_warning(smoothed <- pareto_smooth(x), msg)
+  expect_identical(smoothed, x)
+})
+
+test_that("exp_x_minus_exp_y returns zero for equal infinite inputs", {
+  expect_equal(exp_x_minus_exp_y(-Inf, -Inf), 0)
+  expect_equal(exp_x_minus_exp_y(c(-Inf, 0, 1), c(-Inf, 0, 0)), c(0, 0, exp(1) - 1))
+  expect_equal(exp_x_minus_exp_y(0, -Inf), 1)
+})
+
+test_that("ps_tail handles -Inf log weights below the cutoff", {
+  # more tail draws than finite log weights, so the cutoff is -Inf and the
+  # lowest tail draws equal it
+  lw <- c(rep(-Inf, 90), log(1:10))
+  tail <- ps_tail(lw, ndraws_tail = 20, tail = "right", are_log_weights = TRUE)
+
+  expect_false(anyNA(tail$x))
+  expect_true(all(is.infinite(tail$x[1:80]) & tail$x[1:80] < 0))
+})
+
+test_that("ps_tail does not smooth tail values below the cutoff", {
+  # many weights underflow to 0, so the cutoff ties with the lowest tail
+  # values; the smoothed tail must not go below the cutoff (here below 0)
+  w <- c(rep(0, 350), exp(-seq(0, 60, length.out = 50)))
+  tail <- ps_tail(w, ndraws_tail = 60, tail = "right")
+  expect_true(is.finite(tail$k))
+  expect_true(all(tail$x >= 0))
+  # the order of the draws does not change
+  expect_true(all(diff(tail$x[order(w)]) >= 0))
+
+  # same for the left tail
+  tail <- ps_tail(-w, ndraws_tail = 60, tail = "left")
+  expect_true(is.finite(tail$k))
+  expect_true(all(tail$x <= 0))
+})
+
+test_that("pareto_smooth does not return negative weights for ties at 0", {
+  w <- c(rep(0, 350), exp(-seq(0, 60, length.out = 50)))
+  ws <- pareto_smooth(w, tail = "right", return_k = FALSE, verbose = FALSE)
+  expect_true(all(ws >= 0))
+  x <- as_draws_df(data.frame(theta = seq_along(ws)))
+  expect_no_error(
+    resample_draws(x, ndraws = 4, weights = ws, method = "simple_no_replace")
+  )
+})
+
+
+test_that("check ps_tail behavior for ndraws_tail less than 5", {
+  lw <- log(c(1:25, 1e3, 1e3, 1e3))
+
   expect_warning(
     tail <- ps_tail(lw, ndraws_tail = 4, tail = "right"),
     "Can't fit generalized Pareto distribution because ndraws_tail is less than 5."
   )
-  # output has expected shape and k = NA
   expect_equal(names(tail), c("x", "k"))
   expect_true(is.na(tail$k))
+})
+
+test_that("ps_tail_sorted_log_ratios matches ps_tail", {
+  lw <- sort(log(c(1:25, 1e3, 1e2, 1e3)))
+  lw <- lw - max(lw)
+  tail_ids <- 19:28
+
+  expected <- ps_tail(lw, ndraws_tail = 10, are_log_weights = TRUE)
+  actual <- ps_tail_sorted_log_ratios(lw[tail_ids], cutoff = lw[min(tail_ids) - 1])
+
+  expect_equal(names(actual), c("tail", "k"))
+  expect_equal(actual$k, expected$k)
+  expect_equal(actual$tail, expected$x[tail_ids])
+})
+
+test_that("ps_tail_sorted_log_ratios handles constant tails", {
+  x <- log(rep(0.3, 10))
+
+  out <- ps_tail_sorted_log_ratios(x, cutoff = log(0.2))
+
+  expect_equal(out$tail, x)
+  expect_true(is.na(out$k))
+})
+
+test_that("ps_tail_sorted_log_ratios returns x unchanged if not smoothed", {
+  # exp() underflows to 0 for the smallest values
+  x <- c(-850, -800, -760, log(seq(0.05, 1, length.out = 20)))
+
+  out <- ps_tail_sorted_log_ratios(x, cutoff = -900, smooth_draws = FALSE)
+
+  expect_identical(out$tail, x)
+  expect_true(is.finite(out$k))
+})
+
+test_that("ps_tail_sorted_log_ratios requires a sorted tail", {
+  x <- log(seq(0.05, 1, length.out = 20))
+
+  expect_error(
+    ps_tail_sorted_log_ratios(rev(x), cutoff = log(0.01)),
+    "must be sorted in ascending order"
+  )
 })
 
 test_that("check ps_tail behavior for constant draws_tail", {
@@ -281,4 +427,63 @@ test_that("check ps_min_ss behavior special cases", {
   expect_true(is.infinite(ps_min_ss(2)))
   # k < 1
   expect_equal(ps_min_ss(0.5), 10^(1 / (1 - max(0, 0.5))))
+})
+
+
+test_that("ps_convergence_rate is stable at transition points", {
+  n <- 10
+  half_limit <- n / (n - 1) - 1 / log(n)
+
+  expect_equal(ps_convergence_rate(0, n), 1)
+  expect_equal(ps_convergence_rate(0.5, n), half_limit)
+  expect_equal(ps_convergence_rate(0.5 + .Machine$double.eps / 2, n), half_limit)
+  expect_equal(
+    ps_convergence_rate(1 - .Machine$double.eps / 2, n),
+    1.8359566012903116e-16
+  )
+  expect_equal(ps_convergence_rate(1, n), 0)
+})
+
+test_that("ps_convergence_rate propagates missing shape parameters", {
+  n <- 1000
+
+  expect_identical(ps_convergence_rate(NA_real_, n), NA_real_)
+  expect_identical(ps_convergence_rate(NaN, n), NA_real_)
+  expect_equal(
+    ps_convergence_rate(c(0.3, NA, 0.8, NaN, -1, 2), n),
+    c(ps_convergence_rate(0.3, n), NA, ps_convergence_rate(0.8, n), NA, 1, 0)
+  )
+})
+
+test_that("pareto diagnostics and smoothing do not depend on the scale of the draws", {
+  set.seed(1234)
+  x <- exp(rnorm(1000))
+  for (s in c(1e-20, 1e-200)) {
+    expect_equal(pareto_khat(s * x), pareto_khat(x))
+    expect_equal(pareto_diags(s * x), pareto_diags(x))
+    expect_equal(
+      pareto_smooth(s * x, return_k = FALSE, verbose = FALSE) / s,
+      pareto_smooth(x, return_k = FALSE, verbose = FALSE)
+    )
+    expect_equal(ps_tail(s * x, ndraws_tail = 50)$k, ps_tail(x, ndraws_tail = 50)$k)
+  }
+})
+
+test_that(".ps_tail_selection selects the tail of a full sort, also with ties", {
+  full_sort_selection <- function(x, ndraws_tail) {
+    ix <- order(x, method = "radix")
+    start <- length(x) - ndraws_tail + 1
+    list(ix = ix[seq(start, length(x))], cutoff = x[ix[start - 1]])
+  }
+  set.seed(452)
+  # rounding and repeated values give ties at the cutoff
+  for (x in list(rnorm(1000), round(rnorm(4000), 1), c(rep(0, 300), runif(100)),
+                 c(rep(-Inf, 50), rnorm(200)))) {
+    for (ndraws_tail in c(5, 19, 60)) {
+      expect_identical(
+        .ps_tail_selection(x, ndraws_tail),
+        full_sort_selection(x, ndraws_tail)
+      )
+    }
+  }
 })
